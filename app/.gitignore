@@ -1,0 +1,9 @@
+# SQLiteの実体はコミットしない（ADR-0015）。
+# バイナリで差分が取れず、3人で並行作業するとマージできないため。
+# schema.sql と fixtures/ から起動時に作り直せる。
+*.db
+
+__pycache__/
+*.pyc
+.venv/
+.env
