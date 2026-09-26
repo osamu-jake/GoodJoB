@@ -1,0 +1,75 @@
+# ============================================================
+# 知の越境検索 .gitignore
+# 方針：共有するのは schema.sql と fixtures/ のみ。DB本体・収集データ・秘密情報はコミットしない
+# ============================================================
+
+# --- 個人の検討中資料（承認前。承認後に docs/ へコピーして反映する） ---
+private/
+
+# --- 秘密情報（APIキー・接続情報） ---
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# --- SQLite（DB本体は各自ローカルで生成する。fixtures/ から再構築可能） ---
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# --- 収集データ・中間生成物（fixtures/ 以外のデータは共有しない） ---
+data/
+import_errors.csv
+*.npy
+*.npz
+
+# --- 埋め込みモデル・キャッシュ（Hugging Face 等から再取得できる） ---
+models/
+.cache/
+*.onnx
+*.safetensors
+*.bin
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+env/
+.python-version
+
+# --- テスト・静的解析 ---
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- ログ ---
+*.log
+logs/
+
+# --- Claude Code の個人設定（共有する settings.json は対象外） ---
+.claude/settings.local.json
+
+# --- エディタ・OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+
+# --- draw.io のバックアップ・一時ファイル ---
+*.drawio.bkp
+*.drawio.dtmp
+.$*
