@@ -28,6 +28,7 @@ Tech0 PROJECT ZERO Step2-2 企画案C **「知の越境」検索** ── 技術
 - `demo/`：じゃけさんが先行して作った参考実装。**凍結・コピー禁止**（読んで参考にするのはよい）【ADR-0033】
 - `docs/5文書/`：正本
 - `fixtures/seeds.sql`：デモ用固定データ（手入力データの正本）【ADR-0025】
+- `.claude/settings.json`：Claude Code の権限設定（チーム共有）
 
 ファイル単位の構成は `docs/5文書/設計.md` の「構成」を正とする。まだ存在しないファイルがあるので、実在するかどうかは実装計画.mdの状態欄（✅／⬜）で確認すること。
 
@@ -59,7 +60,7 @@ Issueのアサインに使うGitHubアカウント名を併記する。
 
 ## 開発ワークフロー（必ず守ること）
 
-**GitHub Flow**を採用する（`main`のみを使い、`develop`等の恒久ブランチは作らない）。GitHub操作は GitHub CLI（`gh`）で行う。各自のPCで`gh auth login`を済ませておくこと。
+**GitHub Flow**を採用する（`main`のみを使い、`develop`等の恒久ブランチは作らない）。GitHub操作は GitHub CLI（`gh`）で行う。各自のPCで`gh auth login`を済ませておくこと。`gh`・`git`コマンドの許可設定は`.claude/settings.json`で共有する（マージ・クローズは毎回確認、`main`への直接pushとforce pushは禁止）。個人の追加設定は`.claude/settings.local.json`に書く（Git管理外）。
 
 ### 作業開始前のチェック
 
