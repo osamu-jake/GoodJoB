@@ -1,0 +1,2 @@
+-- 手入力データの正本（ADR-0025）。手で編集せず、knowledge.db から tools/export_seeds.py で書き出す
+-- 転記（実装計画 2-1a）が入るまでは空

@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-8.3.3, pluggy-1.6.0 -- /usr/local/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/user/GoodJoB/app
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.14.1
+collecting ... collected 10 items
+
+tests/test_build_db.py::test_u13_builds_from_schema_and_seeds_when_db_missing PASSED [ 10%]
+tests/test_build_db.py::test_u14_keeps_existing_db PASSED                [ 20%]
+tests/test_build_db.py::test_rebuild_discards_local_edits PASSED         [ 30%]
+tests/test_build_db.py::test_failed_build_leaves_no_db PASSED            [ 40%]
+tests/test_build_db.py::test_u22_and_i05b_problem_and_background_are_indexed PASSED [ 50%]
+tests/test_build_db.py::test_i05_insert_alone_is_not_searchable_until_reindexed PASSED [ 60%]
+tests/test_build_db.py::test_u25_project_techs_rejects_duplicate_pair PASSED [ 70%]
+tests/test_build_db.py::test_adr0046_patents_seed_id_is_not_null PASSED  [ 80%]
+tests/test_build_db.py::test_seeds_violating_foreign_key_fail_the_build PASSED [ 90%]
+tests/test_build_db.py::test_bundled_schema_and_seeds_build PASSED       [100%]
+
+============================== 10 passed in 0.25s ==============================
