@@ -1,0 +1,105 @@
+# 2-4 (#37) pytest結果  2026-10-03 00:16
+$ cd app && HF_HUB_OFFLINE=1 pytest -v -rs   (モデルはtruststoreで取得済みのローカルキャッシュを使用)
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 70 items
+
+tests/test_bm25.py::test_u04_デモ用ニーズ文でBM25が0件になる SKIPPED     [  1%]
+tests/test_bm25.py::test_指定したdoc_typeだけが返る PASSED               [  2%]
+tests/test_bm25.py::test_一致する語が無ければ0件 PASSED                  [  4%]
+tests/test_bm25.py::test_空のクエリや助詞だけのクエリは0件 PASSED        [  5%]
+tests/test_bm25.py::test_語が多く一致する文書ほど上に来る PASSED         [  7%]
+tests/test_bm25.py::test_上位k件に絞られる PASSED                        [  8%]
+tests/test_bm25.py::test_スニペットは原文から切り出され_一致語が入る PASSED [ 10%]
+tests/test_bm25.py::test_スニペット無しも選べる PASSED                   [ 11%]
+tests/test_bm25.py::test_problemやbackgroundだけにある語でも引ける PASSED [ 12%]
+tests/test_build_db.py::test_u13_dbが無ければschemaとseedsから構築される PASSED [ 14%]
+tests/test_build_db.py::test_u13_8テーブルがそろう PASSED                [ 15%]
+tests/test_build_db.py::test_u14_dbが既にあれば再構築しない PASSED       [ 17%]
+tests/test_build_db.py::test_rebuildはseedsから作り直して手元の変更を置き換える PASSED [ 18%]
+tests/test_build_db.py::test_seedsが無くてもスキーマだけのDBができる PASSED [ 20%]
+tests/test_build_db.py::test_接続は外部キー検査がONになっている PASSED   [ 21%]
+tests/test_build_db.py::test_u22_problemだけにある語でもFTSがヒットする PASSED [ 22%]
+tests/test_build_db.py::test_u22_backgroundだけにある語でもFTSがヒットする PASSED [ 24%]
+tests/test_build_db.py::test_i05_documentsへINSERTしただけでは索引に出ず_張り直すと出る PASSED [ 25%]
+tests/test_build_db.py::test_i04_summary_plainはseedsの生成済みテキストがそのまま入る PASSED [ 27%]
+tests/test_build_db.py::test_i03_dbなしから構築して検索できる PASSED     [ 28%]
+tests/test_build_db.py::test_u25_同じ企画と技術の組を2回登録すると一意制約違反 PASSED [ 30%]
+tests/test_build_db.py::test_patentsのseed_idはNULLを許さない PASSED     [ 31%]
+tests/test_connection.py::test_u27_存在しないseed_idでproject_techsへ登録するとエラー PASSED [ 32%]
+tests/test_connection.py::test_u27_判断の行がある技術をdocumentsから削除するとエラー PASSED [ 34%]
+tests/test_connection.py::test_u27_存在しないseed_idでpatentsへ登録するとエラー PASSED [ 35%]
+tests/test_connection.py::test_存在しない企画でproject_productsへ登録するとエラー PASSED [ 37%]
+tests/test_connection.py::test_どこからも参照されない文書は削除できる PASSED [ 38%]
+tests/test_cross_search.py::test_u21_関連度の降順 SKIPPED (2-6 (#39)...) [ 40%]
+tests/test_cross_search.py::test_u23_同じ側は別リスト SKIPPED (2-6 (...) [ 41%]
+tests/test_cross_search.py::test_i01_RRFで統合 SKIPPED (2-6 (#39) で...) [ 42%]
+tests/test_cross_search.py::test_i02_doc_idごとに集約 SKIPPED (2-6 (...) [ 44%]
+tests/test_cross_search.py::test_i10_同じ側は重複しない SKIPPED (2-6...) [ 45%]
+tests/test_embeddings.py::test_u15_要約_課題_背景が揃った文書は3行できる PASSED [ 47%]
+tests/test_embeddings.py::test_u15_titleは埋め込まない PASSED            [ 48%]
+tests/test_embeddings.py::test_空のフィールドは行を作らない PASSED       [ 50%]
+tests/test_embeddings.py::test_全文書に少なくとも1行ある PASSED          [ 51%]
+tests/test_embeddings.py::test_保存されたベクトルはfloat32の正規化済み PASSED [ 52%]
+tests/test_embeddings.py::test_再構築しても同じ行数になる PASSED         [ 54%]
+tests/test_embeddings.py::test_文書側のテキストにはpassageプレフィックスが付いて計算される PASSED [ 55%]
+tests/test_export_seeds.py::test_u26_書き出して再構築しても番号と対応が変わらない PASSED [ 57%]
+tests/test_export_seeds.py::test_書き出しはidを明示し_参照先のテーブルから順に並ぶ PASSED [ 58%]
+tests/test_export_seeds.py::test_embeddingsとsearch_logsは書き出さない PASSED [ 60%]
+tests/test_export_seeds.py::test_改行はLFで書き出される PASSED           [ 61%]
+tests/test_highlight.py::test_u12_最近傍ペア SKIPPED (3-4 (#44) で実装)  [ 62%]
+tests/test_hit_judge.py::test_u08_ヒットなし判定 SKIPPED (2-8 (#41) ...) [ 64%]
+tests/test_hit_judge.py::test_u09_閾値の境界 SKIPPED (2-8 (#41) で実装)  [ 65%]
+tests/test_real_seeds.py::test_実データのseedsからDBを組み立てられる SKIPPED [ 67%]
+tests/test_real_seeds.py::test_実データの外部キーが壊れていない SKIPPED  [ 68%]
+tests/test_real_seeds.py::test_実データのdoc_typeとsourceが仕様の値である SKIPPED [ 70%]
+tests/test_repositories.py::test_u17_行が無くても例外にならない SKIPPED  [ 71%]
+tests/test_repositories.py::test_u24_未評価は空リスト SKIPPED (2-4b ...) [ 72%]
+tests/test_rrf.py::test_u01_統合スコア SKIPPED (2-6 (#39) で実装)        [ 74%]
+tests/test_rrf.py::test_u02_片方だけの文書 SKIPPED (2-6 (#39) で実装)    [ 75%]
+tests/test_scoring.py::test_u10_百分率 SKIPPED (2-8 (#41) で実装)        [ 77%]
+tests/test_scoring.py::test_u10b_低い類似度 SKIPPED (2-8 (#41) で実装)   [ 78%]
+tests/test_scoring.py::test_u11_語一致ラベル SKIPPED (2-8 (#41) で実装)  [ 80%]
+tests/test_tokenizer.py::test_u03_品詞フィルタで名詞_動詞_形容詞のみが残る PASSED [ 81%]
+tests/test_tokenizer.py::test_u03_ストップワードが除かれる PASSED        [ 82%]
+tests/test_tokenizer.py::test_記号だけの語_数字_1文字の仮名は残らない PASSED [ 84%]
+tests/test_tokenizer.py::test_空やNoneは空リスト PASSED                  [ 85%]
+tests/test_tokenizer.py::test_検索クエリは重複を除いてORでつなぐ PASSED  [ 87%]
+tests/test_tokenizer.py::test_索引側と検索側で同じ語になる PASSED        [ 88%]
+tests/test_tokenizer.py::test_find_spansは原文中の位置を返す PASSED      [ 90%]
+tests/test_tokenizer.py::test_find_spansは語が無ければ空 PASSED          [ 91%]
+tests/test_vector.py::test_u05_クエリにはquery_文書にはpassageのプレフィックスが付く PASSED [ 92%]
+tests/test_vector.py::test_encode_queryは1次元_encode_passageは件数x次元 PASSED [ 94%]
+tests/test_vector.py::test_blobの往復で値が変わらない PASSED             [ 95%]
+tests/test_vector.py::test_u06_正規化済みベクトルの内積がコサイン類似度と一致する SKIPPED [ 97%]
+tests/test_vector.py::test_u07_同一doc_idの複数フィールドが最大類似度に集約される SKIPPED [ 98%]
+tests/test_vector.py::test_実モデルは384次元の正規化済みfloat32を返す PASSED [100%]
+
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_bm25.py:10: 2-13 (#38) で実データのデモ用クエリを確定してから実装
+SKIPPED [1] tests\test_cross_search.py:8: 2-6 (#39) で実装
+SKIPPED [1] tests\test_cross_search.py:13: 2-6 (#39) で実装
+SKIPPED [1] tests\test_cross_search.py:18: 2-6 (#39) で実装
+SKIPPED [1] tests\test_cross_search.py:23: 2-6 (#39) で実装
+SKIPPED [1] tests\test_cross_search.py:28: 2-6 (#39) で実装
+SKIPPED [1] tests\test_highlight.py:8: 3-4 (#44) で実装
+SKIPPED [1] tests\test_hit_judge.py:8: 2-8 (#41) で実装
+SKIPPED [1] tests\test_hit_judge.py:13: 2-8 (#41) で実装
+SKIPPED [1] tests\test_real_seeds.py:22: fixtures/seeds.sql がまだ無い
+SKIPPED [1] tests\test_real_seeds.py:27: fixtures/seeds.sql がまだ無い
+SKIPPED [1] tests\test_real_seeds.py:31: fixtures/seeds.sql がまだ無い
+SKIPPED [1] tests\test_repositories.py:8: 2-4b (#40) で実装
+SKIPPED [1] tests\test_repositories.py:13: 2-4b (#40) で実装
+SKIPPED [1] tests\test_rrf.py:8: 2-6 (#39) で実装
+SKIPPED [1] tests\test_rrf.py:13: 2-6 (#39) で実装
+SKIPPED [1] tests\test_scoring.py:8: 2-8 (#41) で実装
+SKIPPED [1] tests\test_scoring.py:13: 2-8 (#41) で実装
+SKIPPED [1] tests\test_scoring.py:18: 2-8 (#41) で実装
+SKIPPED [1] tests\test_vector.py:39: 2-6 (#39) で実装
+SKIPPED [1] tests\test_vector.py:44: 2-6 (#39) で実装
+================= 49 passed, 21 skipped in 137.84s (0:02:17) ==================

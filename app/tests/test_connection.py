@@ -31,5 +31,6 @@ def test_存在しない企画でproject_productsへ登録するとエラー(con
 
 
 def test_どこからも参照されない文書は削除できる(con):
+    con.execute("DELETE FROM embeddings WHERE doc_id = 14")  # 埋め込みも文書を参照している
     con.execute("DELETE FROM documents WHERE id = 14")
     assert con.execute("SELECT COUNT(*) FROM documents WHERE id = 14").fetchone()[0] == 0

@@ -9,6 +9,9 @@ from pathlib import Path
 import pytest
 
 from db import build_db
+from search import vector
+
+from .fake_encoder import fake_encode
 
 TEST_SEEDS = Path(__file__).parent / "seeds" / "test_seeds.sql"
 
@@ -20,8 +23,14 @@ def db_path(tmp_path):
 
 
 @pytest.fixture
-def con(db_path):
-    """テスト用seedsから組み立てた、外部キー検査ONのDB接続。"""
+def fake_encoder(monkeypatch):
+    """埋め込みモデルを読み込まず、疑似エンコーダに差し替える（速くするため）。"""
+    monkeypatch.setattr(vector, "_encode", fake_encode)
+
+
+@pytest.fixture
+def con(db_path, fake_encoder):
+    """テスト用seedsから組み立てた、外部キー検査ONのDB接続（埋め込みは疑似エンコーダ）。"""
     connection = build_db.build(db_path, seeds_path=TEST_SEEDS)
     yield connection
     connection.close()
