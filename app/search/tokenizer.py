@@ -33,6 +33,7 @@ STOPWORDS = frozenset(
 )
 
 _SINGLE_KANA_OR_ASCII = re.compile(r"^[ぁ-ゟ\x00-\x7f]$")
+_HAS_WORD_CHAR = re.compile(r"\w")  # 「+)」のような記号だけの語を除く
 
 
 @lru_cache(maxsize=1)
@@ -60,7 +61,7 @@ def _keep(token) -> str | None:
     word = _normalize(word)
     if word in STOPWORDS:
         return None
-    if _SINGLE_KANA_OR_ASCII.match(word):
+    if _SINGLE_KANA_OR_ASCII.match(word) or not _HAS_WORD_CHAR.search(word):
         return None
     return word
 
