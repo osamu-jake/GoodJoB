@@ -1,0 +1,34 @@
+# 2-8 (#41) pytest結果  2026-10-03 00:45
+$ cd app && pytest -v tests/test_hit_judge.py tests/test_scoring.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 22 items
+
+tests/test_hit_judge.py::test_u08_BM25が0件で類似度0_70なら_ヒットなし PASSED [  4%]
+tests/test_hit_judge.py::test_u09_閾値の境界は_0_80がヒットなし_0_81がヒットあり[0.8-True] PASSED [  9%]
+tests/test_hit_judge.py::test_u09_閾値の境界は_0_80がヒットなし_0_81がヒットあり[0.81-False] PASSED [ 13%]
+tests/test_hit_judge.py::test_BM25に1件でもあればヒットあり_類似度が低くても PASSED [ 18%]
+tests/test_hit_judge.py::test_閾値は引数で変えられる PASSED              [ 22%]
+tests/test_hit_judge.py::test_検索結果から判定できる PASSED              [ 27%]
+tests/test_scoring.py::test_u10_類似度はそのまま百分率になる PASSED      [ 31%]
+tests/test_scoring.py::test_u10b_全候補が低い類似度でも1位が上限に丸められない PASSED [ 36%]
+tests/test_scoring.py::test_u11_BM25のみでヒットした文書は数値を出さず_語一致ラベル PASSED [ 40%]
+tests/test_scoring.py::test_類似度が無い_キーワードのみの方式でも語一致 PASSED [ 45%]
+tests/test_scoring.py::test_意味検索でもヒットした文書は数値が出る PASSED [ 50%]
+tests/test_scoring.py::test_数値に添える言葉[0.9-\u8fd1\u3044] PASSED    [ 54%]
+tests/test_scoring.py::test_数値に添える言葉[0.85-\u8fd1\u3044] PASSED   [ 59%]
+tests/test_scoring.py::test_数値に添える言葉[0.84-\u3084\u3084\u8fd1\u3044] PASSED [ 63%]
+tests/test_scoring.py::test_数値に添える言葉[0.8-\u3084\u3084\u8fd1\u3044] PASSED [ 68%]
+tests/test_scoring.py::test_数値に添える言葉[0.79-\u5fdc\u7528\u5019\u88dc] PASSED [ 72%]
+tests/test_scoring.py::test_四捨五入と範囲の丸め[0.845-85] PASSED        [ 77%]
+tests/test_scoring.py::test_四捨五入と範囲の丸め[0.0-0] PASSED           [ 81%]
+tests/test_scoring.py::test_四捨五入と範囲の丸め[1.0-100] PASSED         [ 86%]
+tests/test_scoring.py::test_四捨五入と範囲の丸め[-0.05-0] PASSED         [ 90%]
+tests/test_scoring.py::test_四捨五入と範囲の丸め[1.02-100] PASSED        [ 95%]
+tests/test_scoring.py::test_検索結果に対して使える PASSED                [100%]
+
+============================= 22 passed in 0.36s ==============================
