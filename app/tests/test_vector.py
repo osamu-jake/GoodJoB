@@ -1,4 +1,4 @@
-"""search/vector.py のテスト。U-05は2-4(#37)、U-06・U-07は2-6(#39)で書く。"""
+"""search/vector.py のテスト（U-05・U-06・U-07）。"""
 
 import numpy as np
 import pytest
@@ -36,12 +36,34 @@ def test_blobの往復で値が変わらない():
 
 def test_u06_正規化済みベクトルの内積がコサイン類似度と一致する():
     """U-06: 正規化済みベクトル2本 → 内積がコサイン類似度と一致する。"""
-    pytest.skip("2-6 (#39) で実装")
+    rng = np.random.default_rng(1)
+    a, b = rng.normal(size=384), rng.normal(size=384)
+    a, b = (a / np.linalg.norm(a)).astype(np.float32), (b / np.linalg.norm(b)).astype(np.float32)
+    cosine = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b)))  # 定義どおりの計算
+
+    rows = [{"doc_id": 1, "field": "body", "vec": vector.to_blob(b)}]
+    ((_, _, sim),) = vector.similarities(a, rows)
+
+    assert sim == pytest.approx(cosine, abs=1e-6)
 
 
 def test_u07_同一doc_idの複数フィールドが最大類似度に集約される():
     """U-07: 同一doc_idの複数フィールドのベクトル → 最大類似度に集約される（ADR-0021）。"""
-    pytest.skip("2-6 (#39) で実装")
+    scored = [(1, "body", 0.50), (1, "problem", 0.82), (1, "background", 0.61), (2, "body", 0.70)]
+
+    best = vector.best_by_doc(scored)
+
+    assert best == {1: (0.82, "problem"), 2: (0.70, "body")}  # 文書1は problem の値。1文書1エントリ
+
+
+def test_rankは類似度の降順で上位k件_同点はdoc_idの小さい順():
+    best = {3: (0.5, "body"), 1: (0.9, "body"), 2: (0.5, "problem"), 4: (0.1, "body")}
+    assert vector.rank(best, 3) == [1, 2, 3]
+
+
+def test_ベクトルが無ければ検索結果は空(con):
+    con.execute("DELETE FROM embeddings")
+    assert vector.search(con, "前髪", "seed") == {}
 
 
 @pytest.mark.model
