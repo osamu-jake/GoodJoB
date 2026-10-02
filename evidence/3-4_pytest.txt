@@ -1,0 +1,28 @@
+# 3-4 (#44) pytest結果  2026-10-03 00:57
+$ cd app && HF_HUB_OFFLINE=1 pytest -v -s tests/test_highlight.py tests/test_semantic.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 14 items
+
+tests/test_highlight.py::test_u12_意味的に最も近い語句のペアが抽出される PASSED
+tests/test_highlight.py::test_文書側の位置が原文の表記で返る PASSED
+tests/test_highlight.py::test_同じ文書語句は2回使わない PASSED
+tests/test_highlight.py::test_件数はtop_nまでで_類似度の降順 PASSED
+tests/test_highlight.py::test_クエリに語が無い_文書が無い_は空 PASSED
+tests/test_highlight.py::test_語句は内容語の基本形で重複が無い PASSED
+PASSED
+tests/test_semantic.py::test_言い換えでも意味の近い技術が1位に来る[\u6c57\u3092\u304b\u304f\u3068\u65e5\u713c\u3051\u6b62\u3081\u304c\u6d41\u308c\u3066\u52b9\u679c\u304c\u7d9a\u304b\u306a\u3044-3] PASSED
+tests/test_semantic.py::test_言い換えでも意味の近い技術が1位に来る[\u671d\u3064\u3051\u305f\u9999\u308a\u304c\u663c\u306b\u306f\u6d88\u3048\u3066\u3057\u307e\u3046-6] PASSED
+tests/test_semantic.py::test_言い換えでも意味の近い技術が1位に来る[\u51ac\u306f\u808c\u304c\u30ab\u30b5\u30ab\u30b5\u3057\u3066\u7c89\u3092\u3075\u304f-4] PASSED
+tests/test_semantic.py::test_無関係な文は関連のある文より最高類似度が低い PASSED
+tests/test_semantic.py::test_同じ側の検索では似た悩みが返る PASSED
+tests/test_semantic.py::test_ハイブリッドの表示順は関連度の降順 PASSED
+tests/test_semantic.py::test_ハイライトは実モデルで文書側の実在する語句を返す 
+ハイライトのペア: [('前髪', '髪', 0.936), ('夕方', '時間', 0.905), ('ベタつく', '落ちる', 0.857)]
+PASSED
+
+============================= 14 passed in 42.27s =============================
