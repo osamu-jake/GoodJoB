@@ -1,0 +1,25 @@
+# 1-2 (#33) pytest結果  2026-10-02 23:40
+$ cd app && pytest -v tests/test_build_db.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 13 items
+
+tests/test_build_db.py::test_u13_dbが無ければschemaとseedsから構築される PASSED [  7%]
+tests/test_build_db.py::test_u13_8テーブルがそろう PASSED                [ 15%]
+tests/test_build_db.py::test_u14_dbが既にあれば再構築しない PASSED       [ 23%]
+tests/test_build_db.py::test_rebuildはseedsから作り直して手元の変更を置き換える PASSED [ 30%]
+tests/test_build_db.py::test_seedsが無くてもスキーマだけのDBができる PASSED [ 38%]
+tests/test_build_db.py::test_接続は外部キー検査がONになっている PASSED   [ 46%]
+tests/test_build_db.py::test_u22_problemだけにある語でもFTSがヒットする PASSED [ 53%]
+tests/test_build_db.py::test_u22_backgroundだけにある語でもFTSがヒットする PASSED [ 61%]
+tests/test_build_db.py::test_i05_documentsへINSERTしただけでは索引に出ず_張り直すと出る PASSED [ 69%]
+tests/test_build_db.py::test_i04_summary_plainはseedsの生成済みテキストがそのまま入る PASSED [ 76%]
+tests/test_build_db.py::test_i03_dbなしから構築して検索できる PASSED     [ 84%]
+tests/test_build_db.py::test_u25_同じ企画と技術の組を2回登録すると一意制約違反 PASSED [ 92%]
+tests/test_build_db.py::test_patentsのseed_idはNULLを許さない PASSED     [100%]
+
+============================= 13 passed in 1.05s ==============================
