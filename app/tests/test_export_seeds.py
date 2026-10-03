@@ -29,6 +29,7 @@ def test_u26_書き出して再構築しても番号と対応が変わらない(
     """U-26: 書き出し → `--rebuild` で再構築 → documents.id と project_techs の対応が前後で変わらない。"""
     con = build_db.build(db_path, seeds_path=TEST_SEEDS)
     # 番号が飛んでいる状態にする（途中の文書を消すと、id を明示しないと詰め直されて対応が崩れる）
+    con.execute("DELETE FROM embeddings WHERE doc_id = 14")
     con.execute("DELETE FROM documents WHERE id = 14")
     # 手入力で足した行（引用符・改行・NULLを含む）
     con.execute(

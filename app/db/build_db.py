@@ -8,6 +8,7 @@
 - `.db` が既にあるときは**何もしない**（手元で転記中のデータを守るため）
 - `git pull` で新しい seeds.sql が来たときは `python db/build_db.py --rebuild` で作り直す
 - `summary_plain` は seeds.sql に入っている生成済みテキストをそのまま使う。ここでAPIは呼ばない（ADR-0020）
+- 埋め込みはローカル計算（無料）なので、組み立てのたびに計算する。seeds.sql には含めない（ADR-0020）
 
 作り直しは、メモリ上で組み立ててから `.db` へ丸ごと書き込む（SQLiteのbackup API）。
 ファイルを消す処理は使わないので、途中で失敗しても既存の `.db` は半端な状態にならない。
@@ -23,7 +24,7 @@ if str(APP_DIR) not in sys.path:  # `python db/build_db.py` で直接動かし�
     sys.path.insert(0, str(APP_DIR))
 
 from db import connection  # noqa: E402
-from search import tokenizer  # noqa: E402
+from search import tokenizer, vector  # noqa: E402
 
 log = logging.getLogger(__name__)
 
@@ -66,8 +67,34 @@ def rebuild_fts(con: sqlite3.Connection) -> None:
     )
 
 
+def build_embeddings(con: sqlite3.Connection) -> int:
+    """全文書のフィールド別ベクトルを計算して `embeddings` に保存する（ADR-0020・0021）。
+
+    要約(body)・課題(problem)・背景(background)をフィールドごとに別のベクトルにする。
+    連結して1本にしないのは、e5の512トークン上限で末尾が切り捨てられるのを避けるため。
+    **titleは埋め込まない**。空のフィールドは行を作らない（ニーズ文書は body の1行だけになる）。
+    ローカル計算で無料なので、DBを組み立てるたびに計算し直してよい。作った行数を返す。
+    """
+    rows = con.execute(f"SELECT id, {', '.join(vector.FIELDS)} FROM documents ORDER BY id").fetchall()
+    targets = [
+        (row["id"], name, row[name])
+        for row in rows
+        for name in vector.FIELDS
+        if row[name] and row[name].strip()
+    ]
+    if not targets:
+        return 0
+
+    vecs = vector.encode_passage([text for _, _, text in targets])
+    con.executemany(
+        "INSERT OR REPLACE INTO embeddings (doc_id, field, vec) VALUES (?,?,?)",
+        [(doc_id, name, vector.to_blob(v)) for (doc_id, name, _), v in zip(targets, vecs)],
+    )
+    return len(targets)
+
+
 def _assemble(schema_path: Path, seeds_path: Path) -> sqlite3.Connection:
-    """メモリ上のDBに、スキーマ→seeds→FTS索引の順で組み立てる。"""
+    """メモリ上のDBに、スキーマ→seeds→FTS索引→埋め込みの順で組み立てる。"""
     con = connection.connect(":memory:")
     con.executescript(schema_path.read_text(encoding="utf-8"))
     if seeds_path.exists():
@@ -75,6 +102,7 @@ def _assemble(schema_path: Path, seeds_path: Path) -> sqlite3.Connection:
     else:
         log.warning("seeds.sql が見つかりません（%s）。空のDBを作ります", seeds_path)
     rebuild_fts(con)
+    build_embeddings(con)
     con.commit()
     return con
 
