@@ -1,0 +1,27 @@
+# 2-4b (#40) pytest結果  2026-10-03 00:36
+$ cd app && pytest -v tests/test_repositories.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 15 items
+
+tests/test_repositories.py::test_u17_行が無いdoc_idでも例外にならず_登録なし_実績なしを返す PASSED [  6%]
+tests/test_repositories.py::test_存在しないdoc_idでも例外にならない PASSED [ 13%]
+tests/test_repositories.py::test_u24_判断の行が1件も無い技術は空リストで_ラベルは未評価 PASSED [ 20%]
+tests/test_repositories.py::test_同じ技術の採用と見送りが両方返る PASSED [ 26%]
+tests/test_repositories.py::test_評価中も返り_ラベルは評価中 PASSED      [ 33%]
+tests/test_repositories.py::test_ラベルは採用実績があれば採用を優先する PASSED [ 40%]
+tests/test_repositories.py::test_get_claimsは採用した企画の商品と訴求を返す PASSED [ 46%]
+tests/test_repositories.py::test_get_claimsは見送り_評価中の企画の商品を含めない PASSED [ 53%]
+tests/test_repositories.py::test_get_claims_forは同じ商品を1回だけ返す PASSED [ 60%]
+tests/test_repositories.py::test_get_patentは権利状況とラベルを返す PASSED [ 66%]
+tests/test_repositories.py::test_list_techsは全シーズ文書を返す PASSED   [ 73%]
+tests/test_repositories.py::test_未使用の技術は採用の行が無い技術 PASSED [ 80%]
+tests/test_repositories.py::test_特許ステータスで絞り込める PASSED       [ 86%]
+tests/test_repositories.py::test_絞り込み条件は組み合わせられる PASSED   [ 93%]
+tests/test_repositories.py::test_権利状況が複数行あっても一覧で技術が重複しない PASSED [100%]
+
+============================= 15 passed in 2.20s ==============================
