@@ -208,19 +208,19 @@ def test_dismissing_detail_clears_it():
     assert at.session_state["detail_id"] is None
 
 
-def test_cards_show_match_reasons_for_top_results(app):
-    """S-03・S-14：上位の結果カードに一致理由（クエリの語句 ⇔ 技術文書の語句）が出る。
+def test_cards_show_match_reasons(app):
+    """S-03・S-14：結果カードに一致理由（クエリの語句 ⇔ 技術文書の語句）が出る。
 
-    計算するのは上位3件だけ（ADR-0018）。それより下のカードには一致理由の行を出さない。
+    表示する結果（上位10件まで）すべてについて、検索のときに1回だけ計算する（ADR-0018）。
     """
     at = _search(app())
     assert not at.exception
     n_cards = len(_cards(at))
     reasons = [m.value for m in at.markdown if m.value.startswith("<small>一致理由</small>")]
-    assert n_cards > 3
-    assert len(reasons) == 3
+    assert n_cards > 0
+    assert len(reasons) == n_cards
     assert all("⇔" in r for r in reasons)
     # 検索のときに計算して覚えておくので、画面が描き直されても計算し直さない
     assert set(at.session_state["search"]["matches"]) == {
-        h.doc_id for h in at.session_state["search"]["result"].hits[:3]
+        h.doc_id for h in at.session_state["search"]["result"].hits
     }

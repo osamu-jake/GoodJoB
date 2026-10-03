@@ -11,8 +11,7 @@ from .components import FIELD_LABELS, patent_text, render_ai_note, render_cells,
 def render_card(con, hit, doc: dict, on_detail, matches=None) -> None:
     """カード1枚。`on_detail(doc_id)` は「エビデンス・使われ方を見る」が押されたときに呼ぶ。
 
-    `matches` は一致理由（highlight.highlight の結果）。上位の文書にだけ渡される（ADR-0018）。
-    None なら一致理由の行を出さない（上位でない文書）。
+    `matches` は一致理由（highlight.highlight の結果）。None なら一致理由の行を出さない。
     """
     score = scoring.score_hit(hit)
     # key を付けると、この箱に「st-key-card-○○」という目印が付く（余白の指定は app.py の CSS）
@@ -34,6 +33,7 @@ def render_card(con, hit, doc: dict, on_detail, matches=None) -> None:
         ])
 
         if matches is not None:
+            st.space("small")   # 表と一致理由のあいだに1行分のすきま
             render_matches(matches)
 
         st.space("small")

@@ -12,7 +12,6 @@ from .cards import render_card
 from .components import esc, sample_badge
 
 LABEL = "企画案・生活者の声を、そのまま入力してください"
-HIGHLIGHT_TOP = 3  # 一致理由を計算するのは上位の件数だけ（ADR-0018）
 
 
 def render(con, mode: str) -> None:
@@ -55,9 +54,10 @@ def _run_search(con, query: str, mode: str) -> None:
         log_id = search_log.log_search(
             con, query, hit_count=0 if no_hit else len(result.hits), top_score=result.top_similarity
         )
-    # 一致理由（F-18）は上位の文書だけ、検索のときに1回だけ計算する（ADR-0018）。
-    # ここで覚えておけば、カードの開閉などで画面が描き直されても計算し直さない
-    matches = {h.doc_id: highlight.highlight(con, query, h.doc_id) for h in result.hits[:HIGHLIGHT_TOP]}
+    # 一致理由（F-18）は、表示する結果（上位10件まで）について検索のときに1回だけ計算する
+    # （語句のベクトルは事前に保存しない。ADR-0018）。ここで覚えておけば、カードの開閉などで
+    # 画面が描き直されても計算し直さない。遅すぎる場合の撤退ラインは「上位3件に絞る」（同ADR）
+    matches = {h.doc_id: highlight.highlight(con, query, h.doc_id) for h in result.hits}
     st.session_state.search = {
         "mode": mode, "result": result, "no_hit": no_hit, "log_id": log_id, "matches": matches,
     }
