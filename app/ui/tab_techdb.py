@@ -1,5 +1,7 @@
 """タブ②技術データベース（F-17。仕様「タブ②技術データベース」）。"""
 
+from datetime import datetime
+
 import streamlit as st
 
 from db import repositories, search_log
@@ -50,7 +52,17 @@ def _render_gaps(con) -> None:
         st.info("まだ記録がありません。タブ①で検索するとここに溜まります。")
         return
     st.dataframe(
-        [{"検索日時": r["ts"], "最高関連度": f"{round((r['top_score'] or 0) * 100)}%", "企画案": r["query"]}
+        [{"検索日時": _format_ts(r["ts"]), "最高関連度": f"{round((r['top_score'] or 0) * 100)}%", "企画案": r["query"]}
          for r in rows],
         hide_index=True, width="stretch",
     )
+
+
+def _format_ts(ts: str | None) -> str:
+    """ログの日時（2026-10-04T00:40:23）を画面向けに（2026-10-04 00:40）。読めなければそのまま。"""
+    if not ts:
+        return "—"
+    try:
+        return datetime.fromisoformat(ts).strftime("%Y-%m-%d %H:%M")
+    except ValueError:
+        return ts

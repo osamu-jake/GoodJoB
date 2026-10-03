@@ -161,6 +161,7 @@ def test_techdb_filters(app, con):
     assert not at.exception
     df = at.dataframe[0].value
     assert list(df["企画案"]) == ["朝までカールが落ちない"]
+    assert "T" not in df["検索日時"][0]  # 画面向けの書き方（2026-10-04 00:40）
 
 
 def test_same_side_and_claims(app):
