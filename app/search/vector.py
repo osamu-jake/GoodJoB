@@ -68,3 +68,61 @@ def to_blob(vec: np.ndarray) -> bytes:
 
 def from_blob(blob: bytes) -> np.ndarray:
     return np.frombuffer(blob, dtype=np.float32)
+
+
+# --- 検索（クエリと保存済みベクトルの比較） -------------------------------------------
+
+
+def similarities(query_vec: np.ndarray, rows) -> list[tuple[int, str, float]]:
+    """クエリと各行のベクトルの類似度を (doc_id, field, 類似度) で返す。
+
+    どちらも長さ1に正規化済みなので、内積がそのままコサイン類似度になる。
+    `rows` は doc_id・field・vec(BLOB) を持つ行の並び。
+    """
+    if not rows:
+        return []
+    matrix = np.vstack([from_blob(r["vec"]) for r in rows])
+    sims = matrix @ query_vec
+    return [(r["doc_id"], r["field"], float(s)) for r, s in zip(rows, sims)]
+
+
+def best_by_doc(scored: list[tuple[int, str, float]]) -> dict[int, tuple[float, str]]:
+    """doc_idごとに、最も類似度の高いフィールドの値を採る（ADR-0021）。
+
+    同じ文書が複数フィールド分だけ重複して結果に出るのを防ぐ。戻り値は {doc_id: (類似度, フィールド名)}。
+    """
+    best: dict[int, tuple[float, str]] = {}
+    for doc_id, field, sim in scored:
+        if doc_id not in best or sim > best[doc_id][0]:
+            best[doc_id] = (sim, field)
+    return best
+
+
+def rank(best: dict[int, tuple[float, str]], k: int) -> list[int]:
+    """類似度の高い順に上位k件のdoc_idを返す。同点はdoc_idの小さい順。"""
+    ordered = sorted(best.items(), key=lambda item: (-item[1][0], item[0]))
+    return [doc_id for doc_id, _ in ordered[:k]]
+
+
+def load_embedding_rows(con, doc_type: str):
+    return con.execute(
+        """
+        SELECT e.doc_id, e.field, e.vec
+          FROM embeddings e
+          JOIN documents d ON d.id = e.doc_id
+         WHERE d.doc_type = ?
+        """,
+        (doc_type,),
+    ).fetchall()
+
+
+def search(con, query_text: str, doc_type: str) -> dict[int, tuple[float, str]]:
+    """`doc_type` の全文書について、クエリとの最大類似度を {doc_id: (類似度, フィールド)} で返す。
+
+    候補に入った文書すべてに関連度を付けられるよう、上位k件に絞らず全件分を返す（ADR-0023）。
+    上位に絞るのは呼び出し側（`rank`）。ベクトルが1件も無ければ空。
+    """
+    rows = load_embedding_rows(con, doc_type)
+    if not rows:
+        return {}
+    return best_by_doc(similarities(encode_query(query_text), rows))
