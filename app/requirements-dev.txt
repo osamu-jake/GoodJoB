@@ -1,0 +1,3 @@
+# 開発・テスト用（Streamlit Community Cloud には入れない）。ADR-0036 に合わせて == で固定する
+-r requirements.txt
+pytest==9.1.1
