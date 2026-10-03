@@ -244,7 +244,9 @@ def test_no_hit_shows_fixed_message_and_records_gap(app, con):
     at = _search(app(), query="東京から大阪までの新幹線の料金")
     assert not at.exception
     assert len(_cards(at)) > 0  # 候補はゼロにしない
-    assert [i.value for i in at.info] == ["十分に一致する技術は見つかりませんでした"]  # 固定文だけ
+    assert [i.value for i in at.info] == [
+        "十分に一致する技術は見つかりませんでした。関連度の低い候補を表示しています。"
+    ]  # 固定文＋カードが出ている理由
     assert con.execute("SELECT hit_count FROM search_logs").fetchone()["hit_count"] == 0
 
     next(r for r in at.radio if r.label == "絞り込み").set_value("まだ社内に無い技術").run()
