@@ -22,7 +22,16 @@ from .components import (
 RELATED_K = 3  # 似た課題を解く技術・関連する声の件数
 
 
-@st.dialog("技術の詳細", width="large")
+def _on_dismiss() -> None:
+    """✕・Escキー・外側のクリックで閉じたとき、開いている技術の記録を消す。
+
+    消さないと、次にどのボタンを押しても（＝画面が描き直されると）モーダルがまた開いてしまう。
+    「閉じる」ボタンは自分で消しているが、それ以外の閉じ方はここを通る。
+    """
+    st.session_state.detail_id = None
+
+
+@st.dialog("技術の詳細", width="large", on_dismiss=_on_dismiss)
 def show_detail(con, seed_id: int) -> None:
     doc = repositories.get_documents(con, [seed_id]).get(seed_id)
     if doc is None:

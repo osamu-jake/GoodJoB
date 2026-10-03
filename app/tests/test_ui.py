@@ -188,3 +188,20 @@ def test_shows_guidance_when_no_data(tmp_path, monkeypatch):
     at = AppTest.from_file(str(APP), default_timeout=60).run()
     assert not at.exception
     assert any("データがまだありません" in e.value for e in at.error)
+
+
+def test_dismissing_detail_clears_it():
+    """✕・Esc・外側クリックで閉じたら、開いている技術の記録を消す（次の操作でまた開かない）。"""
+    from streamlit.testing.v1 import AppTest as _AppTest
+
+    def script():
+        import streamlit as st
+        from ui.detail import _on_dismiss
+        st.session_state.setdefault("detail_id", 1)
+        if st.button("dismiss"):  # ブラウザでの「閉じる操作」の代わりに、登録した処理を直接呼ぶ
+            _on_dismiss()
+        st.write(f"detail_id={st.session_state.detail_id}")
+
+    at = _AppTest.from_function(script).run()
+    at.button[0].click().run()
+    assert at.session_state["detail_id"] is None
