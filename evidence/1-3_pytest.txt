@@ -1,0 +1,51 @@
+# 1-3 (#35) pytest結果  2026-10-02 23:47
+$ cd app && pytest -rs
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1
+collected 46 items
+
+tests\test_bm25.py s                                                     [  2%]
+tests\test_build_db.py .............                                     [ 30%]
+tests\test_connection.py .....                                           [ 41%]
+tests\test_cross_search.py sssss                                         [ 52%]
+tests\test_embeddings.py s                                               [ 54%]
+tests\test_export_seeds.py ....                                          [ 63%]
+tests\test_highlight.py s                                                [ 65%]
+tests\test_hit_judge.py ss                                               [ 69%]
+tests\test_real_seeds.py sss                                             [ 76%]
+tests\test_repositories.py ss                                            [ 80%]
+tests\test_rrf.py ss                                                     [ 84%]
+tests\test_scoring.py sss                                                [ 91%]
+tests\test_tokenizer.py s                                                [ 93%]
+tests\test_vector.py sss                                                 [100%]
+
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_bm25.py:8: 2-5 (#36) / 2-13 (#38) で実装
+SKIPPED [1] tests\test_cross_search.py:8: 2-6 (#39) で実装
+SKIPPED [1] tests\test_cross_search.py:13: 2-6 (#39) で実装
+SKIPPED [1] tests\test_cross_search.py:18: 2-6 (#39) で実装
+SKIPPED [1] tests\test_cross_search.py:23: 2-6 (#39) で実装
+SKIPPED [1] tests\test_cross_search.py:28: 2-6 (#39) で実装
+SKIPPED [1] tests\test_embeddings.py:8: 2-4 (#37) で実装
+SKIPPED [1] tests\test_highlight.py:8: 3-4 (#44) で実装
+SKIPPED [1] tests\test_hit_judge.py:8: 2-8 (#41) で実装
+SKIPPED [1] tests\test_hit_judge.py:13: 2-8 (#41) で実装
+SKIPPED [1] tests\test_real_seeds.py:22: fixtures/seeds.sql がまだ無い
+SKIPPED [1] tests\test_real_seeds.py:27: fixtures/seeds.sql がまだ無い
+SKIPPED [1] tests\test_real_seeds.py:31: fixtures/seeds.sql がまだ無い
+SKIPPED [1] tests\test_repositories.py:8: 2-4b (#40) で実装
+SKIPPED [1] tests\test_repositories.py:13: 2-4b (#40) で実装
+SKIPPED [1] tests\test_rrf.py:8: 2-6 (#39) で実装
+SKIPPED [1] tests\test_rrf.py:13: 2-6 (#39) で実装
+SKIPPED [1] tests\test_scoring.py:8: 2-8 (#41) で実装
+SKIPPED [1] tests\test_scoring.py:13: 2-8 (#41) で実装
+SKIPPED [1] tests\test_scoring.py:18: 2-8 (#41) で実装
+SKIPPED [1] tests\test_tokenizer.py:8: 2-5 (#36) で実装
+SKIPPED [1] tests\test_vector.py:8: 2-6 (#39) で実装
+SKIPPED [1] tests\test_vector.py:13: 2-6 (#39) で実装
+SKIPPED [1] tests\test_vector.py:18: 2-6 (#39) で実装
+======================= 22 passed, 24 skipped in 1.37s ========================
