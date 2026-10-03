@@ -1,0 +1,35 @@
+# フロント実装分のテスト（2-7・2-10・2-11・2-12・2-12b・2-14・2-15）
+# 実行日: 2026-10-03 22:57
+# 実行環境: main（4816deb）＋ 本ブランチ ＋ PR #62（scoring.py・hit_judge.py。未マージのため手元で結合して実行）
+# データ: tests/seeds/test_seeds.sql、埋め込みは疑似エンコーダ（conftest.py）
+
+$ .venv/bin/python -m pytest -v tests/test_ui.py tests/test_search_log.py
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/kozue/projects/GoodJoB/app/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/kozue/projects/GoodJoB/app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 15 items
+
+tests/test_ui.py::test_app_starts_without_error PASSED                   [  6%]
+tests/test_ui.py::test_search_shows_cards_and_logs_once PASSED           [ 13%]
+tests/test_ui.py::test_keyword_only_zero_vs_hybrid PASSED                [ 20%]
+tests/test_ui.py::test_keyword_only_search_is_not_logged PASSED          [ 26%]
+tests/test_ui.py::test_detail_opens_from_search_card PASSED              [ 33%]
+tests/test_ui.py::test_detail_unevaluated_and_no_patent PASSED           [ 40%]
+tests/test_ui.py::test_detail_opens_from_techdb_list PASSED              [ 46%]
+tests/test_ui.py::test_close_button_closes_detail PASSED                 [ 53%]
+tests/test_ui.py::test_techdb_filters PASSED                             [ 60%]
+tests/test_ui.py::test_same_side_and_claims PASSED                       [ 66%]
+tests/test_ui.py::test_shows_guidance_when_no_data PASSED                [ 73%]
+tests/test_search_log.py::test_log_search_inserts_exactly_one_row PASSED [ 80%]
+tests/test_search_log.py::test_log_click_updates_the_given_search_only PASSED [ 86%]
+tests/test_search_log.py::test_list_gap_queries_returns_only_no_hit_newest_first PASSED [ 93%]
+tests/test_search_log.py::test_get_documents_returns_rows_by_id PASSED   [100%]
+
+============================== 15 passed in 2.43s ==============================
+
+$ .venv/bin/python -m pytest -q   # 全体（べー実装分を含む）
+.................................................................        [100%]
+132 passed, 5 skipped in 21.94s
