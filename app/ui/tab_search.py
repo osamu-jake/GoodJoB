@@ -76,9 +76,8 @@ def _render_result(con, searched: dict) -> None:
         return
     if searched["no_hit"]:
         # 候補はゼロにしない。関連度の低い「応用できるかもしれない候補」は出し続ける（ADR-0008）
-        st.info("十分に一致する技術は見つかりませんでした。関連度の低い候補を表示しています。")
-        if searched["log_id"] is not None:
-            st.caption("この検索は「まだ社内に無い技術」として記録しました。")
+        # 案内は固定文だけ（ADR-0045）。「まだ社内に無い技術」への記録は裏側で行い、画面には出さない
+        st.info("十分に一致する技術は見つかりませんでした")
 
     st.markdown(
         f"<span style='font-size:0.9em; color:gray;'>"

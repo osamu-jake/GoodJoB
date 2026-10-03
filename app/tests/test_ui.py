@@ -224,3 +224,28 @@ def test_cards_show_match_reasons(app):
     assert set(at.session_state["search"]["matches"]) == {
         h.doc_id for h in at.session_state["search"]["result"].hits
     }
+
+
+def test_demo_query_1_keyword_zero_vs_hybrid(app):
+    """I-09（デモの台本どおり）：入力例①のボタン → キーワードのみ＝0件、両方併用＝N件（ADR-0026）。"""
+    at = app()
+    next(b for b in at.sidebar.button if b.label == "①生活者の声（短文）").click().run()
+    assert at.text_area[0].value == "夕方になると前髪がベタついて束になる"  # check_gap・テストと同じ文
+    _search(at, mode="キーワードのみ")
+    assert len(_cards(at)) == 0
+    at.sidebar.radio[0].set_value("両方併用").run()
+    _search(at)
+    assert len(_cards(at)) > 0
+
+
+def test_no_hit_shows_fixed_message_and_records_gap(app, con):
+    """I-07：該当技術の無い文で検索 → 低関連度のカード＋固定の案内文。hit_count=0 で記録され、
+    タブ②「まだ社内に無い技術」に1件増える（ADR-0008・0045）。"""
+    at = _search(app(), query="東京から大阪までの新幹線の料金")
+    assert not at.exception
+    assert len(_cards(at)) > 0  # 候補はゼロにしない
+    assert [i.value for i in at.info] == ["十分に一致する技術は見つかりませんでした"]  # 固定文だけ
+    assert con.execute("SELECT hit_count FROM search_logs").fetchone()["hit_count"] == 0
+
+    next(r for r in at.radio if r.label == "絞り込み").set_value("まだ社内に無い技術").run()
+    assert list(at.dataframe[0].value["企画案"]) == ["東京から大阪までの新幹線の料金"]
