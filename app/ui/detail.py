@@ -43,7 +43,8 @@ def show_detail(con, seed_id: int) -> None:
     st.caption(f"{doc['category'] or '—'}　|　公開日 {doc['pub_date'] or '—'}")
     if doc["summary_plain"]:
         render_plain_summary(doc["summary_plain"])
-        render_ai_note(align="left")
+        render_ai_note()          # 検索カードと同じく右揃え
+        st.space("small")         # 注記と下の「課題」の枠のあいだに1行分のすきま
 
     render_section("この技術が解決しようとしている課題", doc["problem"])
     render_section("要約", doc["body"])
