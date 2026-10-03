@@ -58,3 +58,21 @@ def test_ハイブリッドの表示順は関連度の降順(semantic_con):
     hits = cross_search.cross_search(semantic_con, "夕方になると前髪がベタついて束になる", same_side_k=0).hits
     sims = [h.similarity for h in hits]
     assert sims == sorted(sims, reverse=True)
+
+
+def test_ハイライトは実モデルで文書側の実在する語句を返す(semantic_con):
+    from search import highlight
+
+    query = "夕方になると前髪がベタついて束になる"
+    matches = highlight.highlight(semantic_con, query, doc_id=1, top_n=3)
+    text_of = {
+        f: semantic_con.execute(f"SELECT {f} FROM documents WHERE id = 1").fetchone()[0]
+        for f in ("problem", "body", "background")
+    }
+
+    assert 1 <= len(matches) <= 3
+    assert [m.similarity for m in matches] == sorted((m.similarity for m in matches), reverse=True)
+    for m in matches:
+        assert m.spans, m  # 原文中の位置が取れている
+        assert all(text_of[m.field][s:e] for s, e in m.spans)
+    print("\nハイライトのペア:", [(m.query_phrase, m.doc_phrase, round(m.similarity, 3)) for m in matches])
