@@ -1,0 +1,31 @@
+# 2-5 (#36) pytest結果  2026-10-02 23:50
+$ cd app && pytest -v tests/test_tokenizer.py tests/test_bm25.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 17 items
+
+tests/test_tokenizer.py::test_u03_品詞フィルタで名詞_動詞_形容詞のみが残る PASSED [  5%]
+tests/test_tokenizer.py::test_u03_ストップワードが除かれる PASSED        [ 11%]
+tests/test_tokenizer.py::test_記号だけの語_数字_1文字の仮名は残らない PASSED [ 17%]
+tests/test_tokenizer.py::test_空やNoneは空リスト PASSED                  [ 23%]
+tests/test_tokenizer.py::test_検索クエリは重複を除いてORでつなぐ PASSED  [ 29%]
+tests/test_tokenizer.py::test_索引側と検索側で同じ語になる PASSED        [ 35%]
+tests/test_tokenizer.py::test_find_spansは原文中の位置を返す PASSED      [ 41%]
+tests/test_tokenizer.py::test_find_spansは語が無ければ空 PASSED          [ 47%]
+tests/test_bm25.py::test_u04_デモ用ニーズ文でBM25が0件になる SKIPPED     [ 52%]
+tests/test_bm25.py::test_指定したdoc_typeだけが返る PASSED               [ 58%]
+tests/test_bm25.py::test_一致する語が無ければ0件 PASSED                  [ 64%]
+tests/test_bm25.py::test_空のクエリや助詞だけのクエリは0件 PASSED        [ 70%]
+tests/test_bm25.py::test_語が多く一致する文書ほど上に来る PASSED         [ 76%]
+tests/test_bm25.py::test_上位k件に絞られる PASSED                        [ 82%]
+tests/test_bm25.py::test_スニペットは原文から切り出され_一致語が入る PASSED [ 88%]
+tests/test_bm25.py::test_スニペット無しも選べる PASSED                   [ 94%]
+tests/test_bm25.py::test_problemやbackgroundだけにある語でも引ける PASSED [100%]
+
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_bm25.py:10: 2-13 (#38) で実データのデモ用クエリを確定してから実装
+======================== 16 passed, 1 skipped in 0.94s ========================
