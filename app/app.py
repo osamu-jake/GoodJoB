@@ -9,7 +9,7 @@
 import streamlit as st
 
 from db import build_db, connection
-from search import cross_search
+from search import cross_search, vector
 from ui import tab_search, tab_techdb
 from ui.detail import show_detail
 
@@ -56,6 +56,17 @@ def get_connection():
     return build_db.build(connection.DB_PATH)
 
 
+@st.cache_resource(show_spinner="AIモデルを準備しています…（起動時に1回だけ。十数秒かかります）")
+def warm_up_model() -> bool:
+    """埋め込みモデルを起動時に読み込んでおく。
+
+    読み込みは最初の1回に十数秒かかる。先に済ませておかないと、最初の検索ボタンで画面が固まる
+    （発表のデモで1回目の検索が止まって見える）。
+    """
+    vector.encode_query("準備")
+    return True
+
+
 def main() -> None:
     if not connection.DB_PATH.exists() and not build_db.SEEDS_PATH.exists():
         st.error("データがまだありません（`app/fixtures/seeds.sql` が未作成。実装計画 2-1a）。")
@@ -69,6 +80,7 @@ def main() -> None:
         )
         st.stop()
     con = get_connection()
+    warm_up_model()
 
     st.session_state.setdefault("query", DEMO_QUERIES["①生活者の声（短文）"])
     st.session_state.setdefault("search", None)      # 直近の検索結果（方式・結果・ログID）
