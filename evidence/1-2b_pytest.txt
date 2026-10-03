@@ -1,0 +1,22 @@
+# 1-2b (#34) pytest結果  2026-10-03 18:54  ※出力先を app/fixtures/ に変更後
+$ cd app && pytest -v tests/test_export_seeds.py tests/test_connection.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 10 items
+
+tests/test_export_seeds.py::test_u26_書き出して再構築しても番号と対応が変わらない PASSED [ 10%]
+tests/test_export_seeds.py::test_書き出しはidを明示し_参照先のテーブルから順に並ぶ PASSED [ 20%]
+tests/test_export_seeds.py::test_embeddingsとsearch_logsは書き出さない PASSED [ 30%]
+tests/test_export_seeds.py::test_改行はLFで書き出される PASSED           [ 40%]
+tests/test_export_seeds.py::test_書き出し先の既定は_build_dbが読む場所と同じ PASSED [ 50%]
+tests/test_connection.py::test_u27_存在しないseed_idでproject_techsへ登録するとエラー PASSED [ 60%]
+tests/test_connection.py::test_u27_判断の行がある技術をdocumentsから削除するとエラー PASSED [ 70%]
+tests/test_connection.py::test_u27_存在しないseed_idでpatentsへ登録するとエラー PASSED [ 80%]
+tests/test_connection.py::test_存在しない企画でproject_productsへ登録するとエラー PASSED [ 90%]
+tests/test_connection.py::test_どこからも参照されない文書は削除できる PASSED [100%]
+
+============================= 10 passed in 1.16s ==============================
