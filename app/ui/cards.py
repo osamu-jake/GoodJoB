@@ -8,8 +8,12 @@ from search import scoring
 from .components import FIELD_LABELS, patent_text, render_ai_note, render_cells, render_plain_summary
 
 
-def render_card(con, hit, doc: dict, on_detail) -> None:
-    """カード1枚。`on_detail(doc_id)` は「エビデンス・使われ方を見る」が押されたときに呼ぶ。"""
+def render_card(con, hit, doc: dict, on_detail, matches=None) -> None:
+    """カード1枚。`on_detail(doc_id)` は「エビデンス・使われ方を見る」が押されたときに呼ぶ。
+
+    `matches` は一致理由（highlight.highlight の結果）。上位の文書にだけ渡される（ADR-0018）。
+    None なら一致理由の行を出さない（上位でない文書）。
+    """
     score = scoring.score_hit(hit)
     # key を付けると、この箱に「st-key-card-○○」という目印が付く（余白の指定は app.py の CSS）
     with st.container(border=True, key=f"card-{doc['id']}"):
@@ -28,6 +32,9 @@ def render_card(con, hit, doc: dict, on_detail) -> None:
             ("採用実績", f"{adopted}件" if adopted else "なし"),
             ("一致箇所", FIELD_LABELS.get(hit.matched_field, "—") if not score.keyword_only else "語一致"),
         ])
+
+        if matches is not None:
+            render_matches(matches)
 
         st.space("small")
         st.markdown("**この技術が解決しようとしている課題**")
@@ -57,3 +64,24 @@ def render_score(score) -> None:
         )
         st.progress(score.percent / 100)
     st.caption(score.label)
+
+
+def render_matches(matches) -> None:
+    """一致理由（F-18）：クエリの語句と技術文書の語句のうち、意味が近い組を並べる。
+
+    例：「夕方」⇔「時間」。利用者が「なぜこの技術が出てきたか」を確かめられるようにする。
+    語の一致ではなく意味の近さなので、的外れな組が出たら、その結果は当てにならないと判断できる。
+    """
+    if not matches:
+        st.caption("一致理由：対応する語句は見つかりませんでした")
+        return
+    pairs = "　".join(
+        f":orange-background[{_md(m.query_phrase)}] ⇔ :blue-background[{_md(m.doc_phrase)}]"
+        for m in matches
+    )
+    st.markdown(f"<small>一致理由</small>　{pairs}", unsafe_allow_html=True)
+
+
+def _md(text: str) -> str:
+    """markdown の記号として読まれる文字を無効にする（語句に [ ] などが入っても崩れないように）。"""
+    return "".join(f"\\{c}" if c in "\\[]*_`" else c for c in text)

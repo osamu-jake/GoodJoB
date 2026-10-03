@@ -6,12 +6,13 @@
 import streamlit as st
 
 from db import repositories, search_log
-from search import cross_search, hit_judge, scoring
+from search import cross_search, highlight, hit_judge, scoring
 
 from .cards import render_card
 from .components import esc, sample_badge
 
 LABEL = "企画案・生活者の声を、そのまま入力してください"
+HIGHLIGHT_TOP = 3  # 一致理由を計算するのは上位の件数だけ（ADR-0018）
 
 
 def render(con, mode: str) -> None:
@@ -54,7 +55,12 @@ def _run_search(con, query: str, mode: str) -> None:
         log_id = search_log.log_search(
             con, query, hit_count=0 if no_hit else len(result.hits), top_score=result.top_similarity
         )
-    st.session_state.search = {"mode": mode, "result": result, "no_hit": no_hit, "log_id": log_id}
+    # 一致理由（F-18）は上位の文書だけ、検索のときに1回だけ計算する（ADR-0018）。
+    # ここで覚えておけば、カードの開閉などで画面が描き直されても計算し直さない
+    matches = {h.doc_id: highlight.highlight(con, query, h.doc_id) for h in result.hits[:HIGHLIGHT_TOP]}
+    st.session_state.search = {
+        "mode": mode, "result": result, "no_hit": no_hit, "log_id": log_id, "matches": matches,
+    }
 
 
 def _render_result(con, searched: dict) -> None:
@@ -91,7 +97,8 @@ def _render_result(con, searched: dict) -> None:
 
     for hit in result.hits:
         if hit.doc_id in docs:
-            render_card(con, hit, docs[hit.doc_id], on_detail=open_detail)
+            render_card(con, hit, docs[hit.doc_id], on_detail=open_detail,
+                        matches=searched["matches"].get(hit.doc_id))
 
     _render_same_side(con, result)
 
