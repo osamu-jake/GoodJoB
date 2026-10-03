@@ -1,0 +1,18 @@
+# 2-13 (#38) pytest結果（測定ツール check_gap.py のテスト） 2026-10-03 00:55
+$ cd app && pytest -v tests/test_check_gap.py
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\tanobey\GoodJoB\app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 6 items
+
+tests/test_check_gap.py::test_BM25が0件で両方併用なら返る短文は成立 PASSED [ 16%]
+tests/test_check_gap.py::test_BM25がヒットしてしまう短文は成立しない PASSED [ 33%]
+tests/test_check_gap.py::test_expectedをタイトルの語か文書IDで指定できる PASSED [ 50%]
+tests/test_check_gap.py::test_キーワードのみでも正解が1位に来る長文は成立しない PASSED [ 66%]
+tests/test_check_gap.py::test_長文の成立条件はキーワードで1位でなく_両方併用で1位 PASSED [ 83%]
+tests/test_check_gap.py::test_レポートに候補ごとの実測と成立した一覧が出る PASSED [100%]
+
+============================== 6 passed in 0.71s ==============================
