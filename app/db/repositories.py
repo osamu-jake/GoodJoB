@@ -14,6 +14,7 @@
 | `get_claims_for(con, seed_ids)` | 上の複数技術版。同じ商品・訴求は1回だけ（タブ①の折りたたみ用） |
 | `get_patent(con, seed_id)` | 権利状況1件。無ければ None |
 | `list_techs(con, ...)` | タブ②の一覧。「未使用の技術」「特許ステータス」で絞り込める |
+| `get_documents(con, doc_ids)` | 文書本体（カード・詳細の表示用）。id をキーにした dict |
 """
 
 import sqlite3
@@ -146,3 +147,17 @@ def list_techs(
         params.append(patent_state)
     sql += " ORDER BY d.id"
     return _rows(con, sql, tuple(params))
+
+
+def get_documents(con: sqlite3.Connection, doc_ids: list[int]) -> dict[int, dict]:
+    """文書本体を id をキーにした dict で返す（検索結果のカード・詳細画面の表示用）。
+
+    検索（cross_search）が返すのは文書 id と関連度だけなので、表示する中身はここで引く。
+    見つからない id は含めない（画面側で読み飛ばす）。
+    各値のキー: documents テーブルの全列
+    """
+    if not doc_ids:
+        return {}
+    placeholders = ",".join("?" * len(doc_ids))
+    rows = _rows(con, f"SELECT * FROM documents WHERE id IN ({placeholders})", tuple(doc_ids))
+    return {row["id"]: row for row in rows}
