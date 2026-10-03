@@ -1,4 +1,4 @@
-# 2-8 (#41) pytest結果  2026-10-03 00:45
+# 2-8 (#41) pytest結果  2026-10-03 23:07
 $ cd app && pytest -v tests/test_hit_judge.py tests/test_scoring.py
 ============================= test session starts =============================
 platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\tanobey\AppData\Local\Programs\Python\Python312\python.exe
@@ -9,8 +9,8 @@ plugins: anyio-4.15.1
 collecting ... collected 22 items
 
 tests/test_hit_judge.py::test_u08_BM25が0件で類似度0_70なら_ヒットなし PASSED [  4%]
-tests/test_hit_judge.py::test_u09_閾値の境界は_0_80がヒットなし_0_81がヒットあり[0.8-True] PASSED [  9%]
-tests/test_hit_judge.py::test_u09_閾値の境界は_0_80がヒットなし_0_81がヒットあり[0.81-False] PASSED [ 13%]
+tests/test_hit_judge.py::test_u09_閾値の境界は_0_79がヒットなし_0_80がヒットあり[0.79-True] PASSED [  9%]
+tests/test_hit_judge.py::test_u09_閾値の境界は_0_79がヒットなし_0_80がヒットあり[0.8-False] PASSED [ 13%]
 tests/test_hit_judge.py::test_BM25に1件でもあればヒットあり_類似度が低くても PASSED [ 18%]
 tests/test_hit_judge.py::test_閾値は引数で変えられる PASSED              [ 22%]
 tests/test_hit_judge.py::test_検索結果から判定できる PASSED              [ 27%]
@@ -31,4 +31,4 @@ tests/test_scoring.py::test_四捨五入と範囲の丸め[-0.05-0] PASSED      
 tests/test_scoring.py::test_四捨五入と範囲の丸め[1.02-100] PASSED        [ 95%]
 tests/test_scoring.py::test_検索結果に対して使える PASSED                [100%]
 
-============================= 22 passed in 0.36s ==============================
+============================= 22 passed in 0.27s ==============================

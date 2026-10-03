@@ -10,9 +10,9 @@ def test_u08_BM25が0件で類似度0_70なら_ヒットなし():
     assert hit_judge.is_no_hit(bm25_count=0, top_similarity=0.70) is True
 
 
-@pytest.mark.parametrize("similarity, expected", [(0.80, True), (0.81, False)])
-def test_u09_閾値の境界は_0_80がヒットなし_0_81がヒットあり(similarity, expected):
-    """U-09（境界値）: 類似度がちょうど0.80／0.81 → 0.80は「ヒットなし」、0.81は「ヒットあり」。"""
+@pytest.mark.parametrize("similarity, expected", [(0.79, True), (0.80, False)])
+def test_u09_閾値の境界は_0_79がヒットなし_0_80がヒットあり(similarity, expected):
+    """U-09（境界値）: 類似度がちょうど0.80／0.79 → 0.80は「ヒットあり」（基準値未満のみヒットなし）、0.79は「ヒットなし」。"""
     assert hit_judge.THRESHOLD == 0.80
     assert hit_judge.is_no_hit(bm25_count=0, top_similarity=similarity) is expected
 
