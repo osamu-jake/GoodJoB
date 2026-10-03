@@ -130,3 +130,9 @@ def test_patentsのseed_idはNULLを許さない(con):
     """ADR-0046: `patents.seed_id` は NOT NULL。"""
     with pytest.raises(sqlite3.IntegrityError, match="NOT NULL"):
         con.execute("INSERT INTO patents (seed_id, state) VALUES (NULL, 'none')")
+
+
+def test_seeds_sqlの既定の置き場所はapp配下のfixtures():
+    """設計.md「構成」に合わせ、`app/fixtures/seeds.sql`（リポジトリ直下ではない）。"""
+    assert build_db.SEEDS_PATH == build_db.APP_DIR / "fixtures" / "seeds.sql"
+    assert build_db.SEEDS_PATH.parent.parent.name == "app"

@@ -1,7 +1,7 @@
 """pytest共通のfixture。
 
 テストは `tests/seeds/test_seeds.sql`（小さな固定データ）から組み立てたDBに対して実行する
-（ADR-0015・0025。実データ `fixtures/seeds.sql` は転記で変わるのでテストの期待値には使わない）。
+（ADR-0015・0025。実データ `app/fixtures/seeds.sql` は転記で変わるのでテストの期待値には使わない）。
 """
 
 from pathlib import Path

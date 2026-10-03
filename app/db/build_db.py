@@ -1,7 +1,7 @@
 """起動時のDB自動構築（ADR-0015・0025・0027）。
 
 手入力データの編集先は `knowledge.db` 本体で、コミット前に `tools/export_seeds.py` で
-`fixtures/seeds.sql` に書き出す。ここがやるのは逆向き：`.db` が無いとき
+`app/fixtures/seeds.sql` に書き出す。ここがやるのは逆向き：`.db` が無いとき
 `schema.sql` と `seeds.sql` から組み立てる。Streamlit Community Cloud は再起動でファイルが
 リポジトリの状態に戻るため、この経路がないとデモの再現性（N-04）が保てない。
 
@@ -28,7 +28,8 @@ from search import tokenizer  # noqa: E402
 log = logging.getLogger(__name__)
 
 SCHEMA_PATH = APP_DIR / "db" / "schema.sql"
-SEEDS_PATH = APP_DIR.parent / "fixtures" / "seeds.sql"
+# 設計.md「構成」に合わせ、app/ 配下に置く（CLAUDE.md の「リポジトリ直下」は設計.md に寄せて修正予定）
+SEEDS_PATH = APP_DIR / "fixtures" / "seeds.sql"
 
 COUNT_TABLES = (
     "documents",
