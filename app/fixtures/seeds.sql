@@ -39,7 +39,7 @@ INSERT INTO documents (id, doc_type, source, title, body, background, problem, u
 
 -- project_products (0件)
 
--- patents (15件)
+-- patents (20件)
 INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (1, 1, 'registered', '特許7715485', NULL, NULL, NULL, NULL);
 INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (2, 2, 'pending', '特開2025-025004', NULL, NULL, NULL, NULL);
 INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (3, 3, 'registered', '特開2022-068272', NULL, NULL, NULL, NULL);
@@ -55,3 +55,8 @@ INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, not
 INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (13, 13, 'registered', '特開2022-151660', NULL, NULL, NULL, NULL);
 INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (14, 14, 'none', '特開2007-186465', NULL, NULL, NULL, '年金不納により特許権消滅（登録後に消滅）');
 INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (15, 15, 'registered', '特開2009-046442', NULL, NULL, NULL, NULL);
+INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (16, 24, 'registered', '特許7304209', NULL, NULL, NULL, NULL);
+INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (17, 25, 'registered', '特許6821481', NULL, NULL, NULL, NULL);
+INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (18, 26, 'registered', '特許6723771', NULL, NULL, NULL, NULL);
+INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (19, 27, 'none', '特許4931337', NULL, NULL, NULL, '年金不納により特許権消滅（登録後に消滅）');
+INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (20, 28, 'registered', '特許7258423', NULL, NULL, NULL, NULL);
