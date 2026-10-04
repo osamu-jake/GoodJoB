@@ -1,0 +1,40 @@
+# フロント実装分のテスト（2-7・2-10・2-11・2-12・2-12b・2-14・2-15）
+# 実行日: 2026-10-04 02:57
+# 実行環境: main（c02e195）＋ 本ブランチ
+# データ: tests/seeds/test_seeds.sql、埋め込みは疑似エンコーダ（conftest.py）
+
+$ .venv/bin/python -m pytest -v tests/test_ui.py tests/test_search_log.py
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/kozue/projects/GoodJoB/app/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/kozue/projects/GoodJoB/app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 19 items
+
+tests/test_ui.py::test_app_starts_without_error PASSED                   [  5%]
+tests/test_ui.py::test_search_shows_cards_and_logs_once PASSED           [ 10%]
+tests/test_ui.py::test_keyword_only_zero_vs_hybrid PASSED                [ 15%]
+tests/test_ui.py::test_keyword_only_search_is_not_logged PASSED          [ 21%]
+tests/test_ui.py::test_detail_opens_from_search_card PASSED              [ 26%]
+tests/test_ui.py::test_detail_unevaluated_and_no_patent PASSED           [ 31%]
+tests/test_ui.py::test_detail_opens_from_techdb_list PASSED              [ 36%]
+tests/test_ui.py::test_close_button_closes_detail PASSED                 [ 42%]
+tests/test_ui.py::test_techdb_filters PASSED                             [ 47%]
+tests/test_ui.py::test_same_side_and_claims PASSED                       [ 52%]
+tests/test_ui.py::test_shows_guidance_when_no_data PASSED                [ 57%]
+tests/test_ui.py::test_dismissing_detail_clears_it PASSED                [ 63%]
+tests/test_ui.py::test_cards_show_match_reasons PASSED                   [ 68%]
+tests/test_ui.py::test_demo_query_1_keyword_zero_vs_hybrid PASSED        [ 73%]
+tests/test_ui.py::test_no_hit_shows_fixed_message_and_records_gap PASSED [ 78%]
+tests/test_search_log.py::test_log_search_inserts_exactly_one_row PASSED [ 84%]
+tests/test_search_log.py::test_log_click_updates_the_given_search_only PASSED [ 89%]
+tests/test_search_log.py::test_list_gap_queries_returns_only_no_hit_newest_first PASSED [ 94%]
+tests/test_search_log.py::test_get_documents_returns_rows_by_id PASSED   [100%]
+
+============================== 19 passed in 3.31s ==============================
+
+$ .venv/bin/python -m pytest -q   # 全体（べー実装分を含む）
+ss...................................................................... [ 94%]
+.........                                                                [100%]
+149 passed, 4 skipped in 17.52s
