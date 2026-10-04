@@ -252,7 +252,7 @@ def test_no_hit_shows_fixed_message_and_records_gap(app, con):
     at = _search(app(), query="東京から大阪までの新幹線の料金")
     assert not at.exception
     assert [i.value for i in at.info] == [
-        "十分に一致する技術は見つかりませんでした。関連度の低い候補は下に折りたたんでいます。"
+        "十分に一致する技術は見つかりませんでした。"
     ]
     # 候補はゼロにしない（画面を空にしない）が、カードはすべて折りたたみの中に入れる
     folded = next(e for e in at.expander if e.label.startswith("関連度の低い候補を見る"))
