@@ -1,13 +1,31 @@
-"""search/bm25.py のテスト（U-04はデモ用の文が決まる2-13で期待値を入れる）。"""
+"""search/bm25.py のテスト（U-04だけは実データ `fixtures/seeds.sql` を使う）。"""
 
 import pytest
 
+from db import build_db
 from search import bm25
 
+# デモ用の短文（実在FAQ id=78・20字）。2-13（#38）で実データを実測して確定した（evidence/2-13_check_gap.txt）
+DEMO_SHORT_QUERY = "シャンプーしてもヘアワックスが落ちない。"
 
-def test_u04_デモ用ニーズ文でBM25が0件になる():
-    """U-04（境界値）: デモ用ニーズ文（短文）でBM25が0件になる（N-06）。期待値は2-13（#38）で実データから確定して入れる。"""
-    pytest.skip("2-13 (#38) で実データのデモ用クエリを確定してから実装")
+
+@pytest.fixture
+def demo_con(db_path, fake_encoder):
+    """実データのseedsから組み立てたDB。BM25しか見ないので埋め込みは疑似エンコーダでよい。"""
+    if not build_db.SEEDS_PATH.exists():
+        pytest.skip("fixtures/seeds.sql がまだ無い")
+    connection = build_db.build(db_path, seeds_path=build_db.SEEDS_PATH)
+    yield connection
+    connection.close()
+
+
+def test_u04_デモ用ニーズ文でBM25が0件になる(demo_con):
+    """U-04（境界値）: デモ用ニーズ文（短文）でBM25が0件になる（N-06）。
+
+    デモ成立の必須条件なので、他のテストと違って実データに期待値を置く。
+    転記で短文に一致する語が入ってしまった（＝0件でなくなった）ら、ここで気づけるようにする。
+    """
+    assert bm25.search(demo_con, DEMO_SHORT_QUERY, doc_type="seed") == []
 
 
 def test_指定したdoc_typeだけが返る(con):
