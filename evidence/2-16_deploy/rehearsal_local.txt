@@ -1,0 +1,12 @@
+# 2-16 (#42) デプロイ予行（手元PC・Windows）  2026-10-05 00:05
+# DBが無い状態（一時フォルダの新規パス）から app.py を AppTest で実行。実モデルを使用。モデルは手元に保存済みのためダウンロード時間は含まない。Streamlitサーバー本体のメモリは含まない
+# $ cd app && HF_HUB_OFFLINE=1 python ../evidence/2-16_deploy/rehearsal.py
+DBの場所: C:\Users\tanobey\AppData\Local\Temp\rehearsal_9wp5m8rv\knowledge.db（存在: False）
+計測前メモリ: 54 MB
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 199/199 [00:00<00:00, 2730.90it/s]
+初回起動（DB組み立て＋モデル読み込み＋画面描画）: 36.7 秒 ／ 例外: 0件
+初回起動後メモリ: 1372 MB ／ ここまでのピーク: 1489 MB
+1回目の検索（入力例①短文・両方併用）: 2.2 秒 ／ 結果カード: 10件 ／ 例外: 0件
+検索後メモリ: 1391 MB ／ ピーク: 1489 MB
+生成されたDBのサイズ: 221 KB
