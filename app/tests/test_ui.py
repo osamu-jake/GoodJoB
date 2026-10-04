@@ -226,28 +226,70 @@ def test_cards_show_match_reasons(app):
     }
 
 
-def test_demo_query_1_keyword_zero_vs_hybrid(app):
-    """I-09（デモの台本どおり）：入力例①のボタン → キーワードのみ＝0件、両方併用＝N件（ADR-0026）。"""
-    at = app()
-    next(b for b in at.sidebar.button if b.label == "①生活者の声（短文）").click().run()
-    assert at.text_area[0].value == "夕方になると前髪がベタついて束になる"  # check_gap・テストと同じ文
-    _search(at, mode="キーワードのみ")
-    assert len(_cards(at)) == 0
-    at.sidebar.radio[0].set_value("両方併用").run()
-    _search(at)
-    assert len(_cards(at)) > 0
+def test_demo_buttons_fill_query(app):
+    """デモ用の入力例ボタンを押すと、その文が検索窓に入り、前の結果は消える。
+
+    本番データで①がキーワードのみ＝0件になることは、テスト用データでは確かめない
+    （本番データは転記で変わるため。ADR-0050・evidence/2-13_check_gap.txt で実測）。
+    I-09 そのものは test_keyword_only_zero_vs_hybrid で確かめる。
+    """
+    demo = {  # ADR-0050 で確定した文
+        "①生活者の声（短文）": "シャンプーしてもヘアワックスが落ちない。",
+        "②企画案（長文）": "セット力はそのままに、お風呂で簡単に洗い流せる整髪料を企画したい。"
+                           "毎日使うものなので、髪や頭皮への負担が少ない処方を探している。",
+    }
+    at = _search(app())
+    assert at.session_state["search"] is not None
+    for label, text in demo.items():
+        next(b for b in at.sidebar.button if b.label == label).click().run()
+        assert at.text_area[0].value == text
+        assert at.session_state["search"] is None
 
 
 def test_no_hit_shows_fixed_message_and_records_gap(app, con):
-    """I-07：該当技術の無い文で検索 → 低関連度のカード＋固定の案内文。hit_count=0 で記録され、
-    タブ②「まだ社内に無い技術」に1件増える（ADR-0008・0045）。"""
+    """I-07・A-06：該当技術の無い文で検索 → 固定の案内文と、関連度の低い候補の折りたたみ（#70）。
+    hit_count=0 で記録され、タブ②「まだ社内に無い技術」に1件増える（ADR-0008・0045）。"""
     at = _search(app(), query="東京から大阪までの新幹線の料金")
     assert not at.exception
-    assert len(_cards(at)) > 0  # 候補はゼロにしない
     assert [i.value for i in at.info] == [
-        "十分に一致する技術は見つかりませんでした。関連度の低い候補を表示しています。"
-    ]  # 固定文＋カードが出ている理由
+        "十分に一致する技術は見つかりませんでした。関連度の低い候補は下に折りたたんでいます。"
+    ]
+    # 候補はゼロにしない（画面を空にしない）が、カードはすべて折りたたみの中に入れる
+    folded = next(e for e in at.expander if e.label.startswith("関連度の低い候補を見る"))
+    n = len(at.session_state["search"]["result"].hits)
+    assert folded.label == f"関連度の低い候補を見る（{n}件）"
+    assert n > 0
+    assert len([b for b in folded.button if (b.key or "").startswith("detail-")]) == len(_cards(at)) == n
+    # ヒットなしのときは「似た悩み・既存の訴求」を出さない
+    assert not any(e.label == "似た悩み・既存の訴求" for e in at.expander)
     assert con.execute("SELECT hit_count FROM search_logs").fetchone()["hit_count"] == 0
 
     next(r for r in at.radio if r.label == "絞り込み").set_value("まだ社内に無い技術").run()
     assert list(at.dataframe[0].value["企画案"]) == ["東京から大阪までの新幹線の料金"]
+
+
+def test_hit_shows_cards_without_folding(app):
+    """ヒットありのときは、カードを折りたたまずに出し、「似た悩み・既存の訴求」も出す。"""
+    at = _search(app())
+    assert not at.session_state["search"]["no_hit"]
+    assert not at.info
+    assert not any(e.label.startswith("関連度の低い候補を見る") for e in at.expander)
+    assert len(_cards(at)) > 0
+    assert any(e.label == "似た悩み・既存の訴求" for e in at.expander)
+
+
+def test_match_phrases_are_escaped():
+    """一致理由の語句は esc() を通す（HTML として出すので、< などがタグとして読まれないように）。"""
+    from streamlit.testing.v1 import AppTest as _AppTest
+
+    def script():
+        from search.highlight import Match
+        from ui.cards import render_matches
+        render_matches([Match(query_phrase="<b>前髪</b>", doc_phrase="A&B", similarity=0.9,
+                              field="problem", spans=[])])
+
+    at = _AppTest.from_function(script).run()
+    assert not at.exception
+    shown = at.markdown[0].value
+    assert "&lt;b&gt;前髪&lt;/b&gt;" in shown and "<b>" not in shown
+    assert "A&amp;B" in shown
