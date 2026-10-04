@@ -1,0 +1,36 @@
+# #50・#70 のテスト（デモ文の差し替え・ヒットなし時の折りたたみ・一致理由のesc）
+# 実行日: 2026-10-04 20:13
+# 実行環境: main（d6d7768）＋ 本ブランチ
+# データ: tests/seeds/test_seeds.sql、埋め込みは疑似エンコーダ（conftest.py）
+
+$ .venv/bin/python -m pytest -v tests/test_ui.py
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/kozue/projects/GoodJoB/app/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/kozue/projects/GoodJoB/app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 17 items
+
+tests/test_ui.py::test_app_starts_without_error PASSED                   [  5%]
+tests/test_ui.py::test_search_shows_cards_and_logs_once PASSED           [ 11%]
+tests/test_ui.py::test_keyword_only_zero_vs_hybrid PASSED                [ 17%]
+tests/test_ui.py::test_keyword_only_search_is_not_logged PASSED          [ 23%]
+tests/test_ui.py::test_detail_opens_from_search_card PASSED              [ 29%]
+tests/test_ui.py::test_detail_unevaluated_and_no_patent PASSED           [ 35%]
+tests/test_ui.py::test_detail_opens_from_techdb_list PASSED              [ 41%]
+tests/test_ui.py::test_close_button_closes_detail PASSED                 [ 47%]
+tests/test_ui.py::test_techdb_filters PASSED                             [ 52%]
+tests/test_ui.py::test_same_side_and_claims PASSED                       [ 58%]
+tests/test_ui.py::test_shows_guidance_when_no_data PASSED                [ 64%]
+tests/test_ui.py::test_dismissing_detail_clears_it PASSED                [ 70%]
+tests/test_ui.py::test_cards_show_match_reasons PASSED                   [ 76%]
+tests/test_ui.py::test_demo_buttons_fill_query PASSED                    [ 82%]
+tests/test_ui.py::test_no_hit_shows_fixed_message_and_records_gap PASSED [ 88%]
+tests/test_ui.py::test_hit_shows_cards_without_folding PASSED            [ 94%]
+tests/test_ui.py::test_match_phrases_are_escaped PASSED                  [100%]
+
+============================== 17 passed in 4.05s ==============================
+
+$ .venv/bin/python -m pytest -q   # 全体
+154 passed, 1 skipped in 19.86s

@@ -75,11 +75,23 @@ def _render_result(con, searched: dict) -> None:
         st.caption(summary)
         return
     if searched["no_hit"]:
-        # 候補はゼロにしない。関連度の低い「応用できるかもしれない候補」は出し続ける（ADR-0008）
-        # 案内は固定文（ADR-0045）＋カードが出ている理由の一文。理由が無いと「ヒットなし」と
-        # カードが同時に出ていて矛盾して見えるため。記録は裏側で行い、画面には出さない
-        st.info("十分に一致する技術は見つかりませんでした。関連度の低い候補を表示しています。")
+        # ヒットなし：固定の案内文（ADR-0045）を出し、関連度の低い候補は折りたたみに入れる（#70）。
+        # 画面は空にしない（要求.md 受入基準）が、無関係な文でも的外れなカードが前面に並ぶと
+        # 「何を入れても何か出る」と見られるため。少し外れた企画案なら、開けば候補を見られる。
+        # 「似た悩み・既存の訴求」も出さない。ヒットなしのときは悩みとして近くないうえ、
+        # 「この悩みに対して打った訴求」という見出しが言い切りで、無関係な文にも付いてしまうため
+        st.info("十分に一致する技術は見つかりませんでした。")   # すぐ下の折りたたみの見出しが候補の案内を兼ねる
+        with st.expander(f"関連度の低い候補を見る（{len(result.hits)}件）"):
+            _render_cards(con, searched, summary)
+        return
 
+    _render_cards(con, searched, summary)
+    _render_same_side(con, result)
+
+
+def _render_cards(con, searched: dict, summary: str) -> None:
+    """件数の行と、反対側の結果カード。"""
+    result = searched["result"]
     st.markdown(
         f"<span style='font-size:0.9em; color:gray;'>"
         f"<span style='font-size:1.5em; color:black;'>{len(result.hits)}</span> 件　（{esc(summary)}）"
@@ -99,8 +111,6 @@ def _render_result(con, searched: dict) -> None:
         if hit.doc_id in docs:
             render_card(con, hit, docs[hit.doc_id], on_detail=open_detail,
                         matches=searched["matches"].get(hit.doc_id))
-
-    _render_same_side(con, result)
 
 
 def _render_same_side(con, result) -> None:
