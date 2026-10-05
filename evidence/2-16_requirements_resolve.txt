@@ -1,0 +1,12 @@
+# 2-16 (#42) requirements.txt の解決確認（Windows・Linux/Python3.12）  2026-10-04 19:33
+# ブランチ: feature/issue-42-pin-requirements  コミット: 23e5271
+
+## A. Windows（この環境）で pip が読めて解決できるか（実際には入れない）
+$ pip install --dry-run --ignore-installed -r app/requirements.txt
+Would install Janome-0.5.0 filelock-4.0.7 numpy-1.26.4 sentence-transformers-6.1.0 streamlit-1.64.0 torch-2.14.0 transformers-5.18.0
+
+## B. Linux・Python3.12 向けに解決し直して、ファイルの固定と食い違わないか
+$ uv pip compile app/requirements.txt --universal --python-version 3.12 --no-header --no-annotate
+ファイルの固定: 90件 / 再解決: 90件 / 差: なし（完全一致）
+Linux でだけ入る GPU 用の部品（nvidia-* と triton）: 16 件（固定済み）
+固定されていない行（==なし）: なし
