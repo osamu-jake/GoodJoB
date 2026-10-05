@@ -5,7 +5,7 @@ import streamlit as st
 from db import repositories
 from search import scoring
 
-from .components import FIELD_LABELS, patent_text, render_ai_note, render_cells, render_plain_summary
+from .components import FIELD_LABELS, esc, patent_text, render_ai_note, render_cells, render_plain_summary
 
 
 def render_card(con, hit, doc: dict, on_detail, matches=None) -> None:
@@ -75,8 +75,9 @@ def render_matches(matches) -> None:
     if not matches:
         st.caption("一致理由：対応する語句は見つかりませんでした")
         return
+    # unsafe_allow_html で出すので、語句は他の箇所と同じく esc() を通す（データに < や & が入っても崩れない）
     pairs = "　".join(
-        f":orange-background[{_md(m.query_phrase)}] ⇔ :blue-background[{_md(m.doc_phrase)}]"
+        f":orange-background[{_md(esc(m.query_phrase))}] ⇔ :blue-background[{_md(esc(m.doc_phrase))}]"
         for m in matches
     )
     st.markdown(f"<small>一致理由</small>　{pairs}", unsafe_allow_html=True)

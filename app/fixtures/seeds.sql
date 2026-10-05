@@ -33,11 +33,29 @@ INSERT INTO documents (id, doc_type, source, title, body, background, problem, u
 INSERT INTO documents (id, doc_type, source, title, body, background, problem, url, pub_date, category, dept, summary_plain, parent_id, chunk_no, content_hash, fetched_at) VALUES (27, 'seed', 'patent_manual', '頭髪用セット剤組成物', '（A）アクリル樹脂アルカノールアミンと、（B）N−メタクリロイルオキシエチルN,N−ジメチルアンモニウム−α−N−メチルカルボキシベタイン・メタクリル酸アルキルエステル共重合体、ポリビニルピロリドン及びビニルピロリドン・N,N−ジメチルアミノエチルメタクリル酸共重合体からなる群から選ばれる1種以上と、（C）水とを含有する頭髪用セット剤組成物。', NULL, 'アクリル樹脂アルカノールアミンと、特定の高分子樹脂化合物を併用することにより、高分子樹脂化合物が本来有するセット力を更に向上させると共に、ごわつきやフレーキングと言ったスタイリング剤特有の問題を低減した整髪用セット剤組成物の提供。', 'https://www.j-platpat.inpit.go.jp/c1801/PU/JP-2006-069904/11/ja', NULL, 'ヘアスタイリング', NULL, '樹脂成分の組み合わせで、セット力を保ちながらごわつき・粉っぽさを減らす整髪技術。', NULL, NULL, NULL, NULL);
 INSERT INTO documents (id, doc_type, source, title, body, background, problem, url, pub_date, category, dept, summary_plain, parent_id, chunk_no, content_hash, fetched_at) VALUES (28, 'seed', 'patent_manual', '非乳化型固形状整髪剤組成物（洗い流しやすい）', '脂肪酸塩（成分A）と、皮膜形成ポリマー（成分B）と、水（成分C）とを含み、成分Aの含有量が2.0質量％以上13.0質量％以下、成分Bの含有量が2.0質量％以上10.0質量％以下、成分Cの含有量が20.0質量％以上95.0質量％以下である。', NULL, '塗布性及び整髪力に優れ、かつ洗髪時に容易に洗い流すことができる固形状整髪剤組成物を提供する。', 'https://www.j-platpat.inpit.go.jp/c1801/PU/JP-2020-152643/11/ja', NULL, 'ヘアスタイリング', NULL, 'しっかりセットできるのに、シャンプーで簡単に洗い流せる固形整髪技術。', NULL, NULL, NULL, NULL);
 
--- projects (0件)
+-- projects (5件)
+INSERT INTO projects (id, name, brief, category, status, started, is_sample) VALUES (1, 'ふわさら吸汗ボディシート', '汗の分泌そのものを抑える処方で、長時間のサラサラ感を訴求するデオドラントシート企画', 'ボディケア', 'launched', '2025-11-01', 1);
+INSERT INTO projects (id, name, brief, category, status, started, is_sample) VALUES (2, 'アイスクリアタッチ化粧水', 'つけた瞬間だけでなく清涼感の持続性を訴求する夏季限定化粧水企画', 'フェイスケア', 'launched', '2026-01-10', 1);
+INSERT INTO projects (id, name, brief, category, status, started, is_sample) VALUES (3, '洗い流しやすい固形スタイリングワックス', 'セット力を保ちながら入浴時に簡単に洗い流せることを訴求するワックス企画', 'ヘアスタイリング', 'ongoing', '2026-07-01', 1);
+INSERT INTO projects (id, name, brief, category, status, started, is_sample) VALUES (4, '速乾ミストスタイリング', '速乾性と舞い散りの少なさを両立したミストタイプのスタイリング剤企画', 'ヘアスタイリング', 'launched', '2026-05-01', 1);
+INSERT INTO projects (id, name, brief, category, status, started, is_sample) VALUES (5, '敏感肌向けやさしい整髪ライン', '低刺激処方を訴求する整髪剤ライン企画', 'ヘアスタイリング', 'cancelled', '2026-03-01', 1);
 
--- project_techs (0件)
+-- project_techs (10件)
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (1, 1, 1, 'adopted', '汗腺に作用して分泌自体を抑える点が「長時間サラサラ」の訴求に直結するため採用', '社内官能評価で8時間後のベタつき感が従来品比で改善', '2025-10-20');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (2, 1, 3, 'evaluating', '抗炎症効果を追加訴求できないか処方検証中', 'パッチテストの結果待ち', '2025-10-25');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (3, 2, 7, 'adopted', '清涼感の持続性がコンセプトと直結するため採用', '官能評価で使用1時間後も清涼感を確認', '2025-12-15');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (4, 2, 6, 'dropped', '原料コストが想定の3倍となり、処方への置き換えを断念', '代替サプライヤーも検討したが価格が折り合わなかった', '2025-12-20');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (5, 3, 28, 'adopted', '洗髪時に容易に洗い流せる点が「洗い流しやすさ」の企画コンセプトと直結するため採用', '試作品の官能評価で好感触。量産化に向けて処方調整中', '2026-07-10');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (6, 3, 26, 'dropped', 'セット力は高いが洗い流しにくく、今回の「洗い流しやすさ」の要件と相反するため不採用', 'シャンプー1回では落ちきらないことを確認', '2026-07-12');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (7, 3, 27, 'dropped', 'セット力はあるが洗浄性が低く、要件を満たさないため不採用', '過去の別企画でも同じ理由で見送った実績あり', '2026-07-11');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (8, 4, 25, 'adopted', '速乾性と舞い散りの少なさがミスト処方の課題解決に直結するため採用', '乾燥時間を従来品比で約30%短縮', '2026-05-10');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (9, 4, 26, 'adopted', '立ち上げ力を補強するため併用採用', 'セット力評価で改善を確認', '2026-05-12');
+INSERT INTO project_techs (id, project_id, seed_id, decision, reason, detail, decided_at) VALUES (10, 5, 24, 'evaluating', '低刺激性の確認のため処方検証中だったが、企画自体の中止により判断は保留のまま', 'パッチテストは実施中だった', '2026-03-10');
 
--- project_products (0件)
+-- project_products (3件)
+INSERT INTO project_products (id, project_id, product, brand, claim, launched, source_url) VALUES (1, 1, '吸汗ボディシート ピュアフレッシュ', 'ピュアフレッシュ', '汗腺に作用してサラサラが長く続く', '2026-01-15', NULL);
+INSERT INTO project_products (id, project_id, product, brand, claim, launched, source_url) VALUES (2, 2, 'アイスクリア化粧水', 'クリアモイスト', 'つけた瞬間からひんやり感が長持ち', '2026-03-01', NULL);
+INSERT INTO project_products (id, project_id, product, brand, claim, launched, source_url) VALUES (3, 4, 'クイックドライ スタイリングミスト', 'エアリータッチ', '速乾・舞い散らないのに、しっかりまとまる', '2026-06-01', NULL);
 
 -- patents (20件)
 INSERT INTO patents (id, seed_id, state, number, filed, registered, expires, note) VALUES (1, 1, 'registered', '特許7715485', NULL, NULL, NULL, NULL);
