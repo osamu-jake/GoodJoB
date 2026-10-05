@@ -60,7 +60,7 @@ CREATE TABLE project_products (
 CREATE TABLE patents (
   id         INTEGER PRIMARY KEY,
   seed_id    INTEGER NOT NULL REFERENCES documents(id),
-  state      TEXT,      -- 'registered' | 'pending' | 'none'
+  state      TEXT,      -- 'registered' | 'pending' | 'expired' | 'rejected' | 'none'（ADR-0053）
   number     TEXT,
   filed      TEXT,
   registered TEXT,
