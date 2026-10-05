@@ -61,6 +61,30 @@ def _call_llm(prompt: str) -> str:
     return resp.content[0].text.strip()
 
 
+def targets(con, force: bool = False) -> list[dict]:
+    """要約を作る対象のseed文書。既定は`summary_plain`が空のものだけ、`force`なら全件。"""
+    where = "doc_type = 'seed'"
+    if not force:
+        where += " AND (summary_plain IS NULL OR summary_plain = '')"
+    return [dict(r) for r in con.execute(f"SELECT * FROM documents WHERE {where} ORDER BY id").fetchall()]
+
+
+def summarize(con, call=None, force: bool = False, dry_run: bool = False) -> list[tuple[int, str]]:
+    """対象の文書ごとに要約を1文作り、`dry_run`でなければ`summary_plain`へ書き込む。
+
+    `call`は「プロンプト → 要約1文」の関数。既定はAnthropic API（`_call_llm`）。
+    テストでは模擬の関数を渡し、APIを呼ばずに確かめる（U-20）。
+    戻り値は (文書id, 要約) の一覧。
+    """
+    call = call or _call_llm
+    results = [(doc["id"], call(_build_prompt(doc))) for doc in targets(con, force)]
+    if not dry_run:
+        con.executemany("UPDATE documents SET summary_plain = ? WHERE id = ?",
+                        [(summary, doc_id) for doc_id, summary in results])
+        con.commit()
+    return results
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--force", action="store_true", help="既存のsummary_plainも作り直す")
@@ -68,25 +92,18 @@ def main() -> None:
     args = parser.parse_args()
 
     con = connection.connect()
-    where = "doc_type = 'seed'" if args.force else "doc_type = 'seed' AND (summary_plain IS NULL OR summary_plain = '')"
-    rows = [dict(r) for r in con.execute(f"SELECT * FROM documents WHERE {where} ORDER BY id").fetchall()]
-
-    if not rows:
+    if not targets(con, args.force):
         print("対象なし（すでに全件 summary_plain が入っています。--force で作り直せます）")
         return
 
-    print(f"{len(rows)}件を生成します（モデル: {MODEL}）")
-    for doc in rows:
-        summary = _call_llm(_build_prompt(doc))
-        print(f"  id={doc['id']} {doc['title']} -> {summary}")
-        if not args.dry_run:
-            con.execute("UPDATE documents SET summary_plain = ? WHERE id = ?", (summary, doc["id"]))
+    print(f"要約を生成します（モデル: {MODEL}）")
+    for doc_id, summary in summarize(con, force=args.force, dry_run=args.dry_run):
+        print(f"  id={doc_id} -> {summary}")
 
-    if not args.dry_run:
-        con.commit()
-        print("DBへ書き込みました。続けて `python3 tools/export_seeds.py` でseeds.sqlへ書き出してください。")
-    else:
+    if args.dry_run:
         print("--dry-run のためDBへは書き込んでいません。")
+    else:
+        print("DBへ書き込みました。続けて `python3 tools/export_seeds.py` でseeds.sqlへ書き出してください。")
 
 
 if __name__ == "__main__":
