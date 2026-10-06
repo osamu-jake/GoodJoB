@@ -1,0 +1,9 @@
+# Issue #88 構成図の summarize.py の位置を tools/ に直す：確認結果
+# 書き出しコマンド: draw.io.exe -x -f pdf --crop -o docs/architecture/architecture.pdf docs/architecture/architecture.drawio
+# --crop を付けると、変更前のPDFと同じ大きさ・1ページになる（付けないと3ページに分かれる）
+
+変更前のPDF（main）: ページ数=1 大きさ=1074x1182 | ingest/summarize.py=1件 / tools/summarize.py=0件 / tools/export_seeds.py=1件 / ingest/crawler.py=1件
+変更後のPDF（このブランチ）: ページ数=1 大きさ=1074x1182 | ingest/summarize.py=0件 / tools/summarize.py=1件 / tools/export_seeds.py=1件 / ingest/crawler.py=1件
+
+architecture.drawio: ingest/summarize.py=0件 / tools/summarize.py=1件 / ingest/crawler.py=1件（クローラーは次フェーズのため残す）
+drawio の差分: docs/architecture/architecture.drawio | 2 +- /  1 file changed, 1 insertion(+), 1 deletion(-)
