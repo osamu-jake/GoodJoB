@@ -21,8 +21,14 @@ import sqlite3
 
 # decision の表示名（仕様「データ」project_techs）
 DECISION_LABELS = {"adopted": "採用", "dropped": "見送り", "evaluating": "評価中"}
-# patents.state の表示名（F-19）
-PATENT_STATE_LABELS = {"registered": "登録済", "pending": "出願中", "none": "未出願"}
+# patents.state の表示名（F-19・ADR-0053）。「登録されたが権利が切れた」と「出願したが登録されなかった」は分ける
+PATENT_STATE_LABELS = {
+    "registered": "登録済",    # 権利が有効
+    "pending": "出願中",       # 審査請求前・審査中・拒絶査定への不服審判中
+    "expired": "権利消滅",     # 登録後に、年金不納・存続期間満了・放棄で消滅
+    "rejected": "登録されず",  # 拒絶査定の確定・取下げ・放棄で、登録に至らなかった
+    "none": "未出願",          # 特許出願していない社内技術
+}
 
 NO_PATENT_LABEL = "登録なし"
 NO_CLAIMS_LABEL = "実績なし"
@@ -130,7 +136,7 @@ def list_techs(
     """タブ②の技術一覧（シーズ文書）。条件を組み合わせて絞り込める。
 
     - `unused_only=True`: **`decision='adopted'` の行が1件も無い技術**（未評価・見送り・評価中だけの技術。ADR-0039）
-    - `patent_state`: 'registered'（登録済）／'pending'（出願中）／'none'（未出願）のどれか
+    - `patent_state`: `PATENT_STATE_LABELS` のキーのどれか（'registered'／'pending'／'expired'／'rejected'／'none'）
     各行のキー: id, title, category, source, patent_state
     """
     sql = """

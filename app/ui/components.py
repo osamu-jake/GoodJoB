@@ -4,8 +4,8 @@ import html
 
 import streamlit as st
 
-# 権利状況のアイコン（patents.state の値 → 表示）
-STATE_ICON = {"registered": "🟢", "pending": "🟡", "none": "🔴"}
+# 権利状況のアイコン（patents.state の値 → 表示。ADR-0053）
+STATE_ICON = {"registered": "🟢", "pending": "🟡", "expired": "⚫", "rejected": "🔴", "none": "🔴"}
 NO_PATENT_ICON = "⚪️"
 
 # どのフィールドで一致したか（cross_search の matched_field → 表示名）

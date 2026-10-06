@@ -92,6 +92,18 @@ def test_get_patentは権利状況とラベルを返す(con):
     assert repo.patent_label(pending) == "出願中"
 
 
+def test_権利消滅と登録されずと未出願は別の表示になる(con):
+    """ADR-0053: 登録後に権利が切れたもの（expired）と、登録に至らなかったもの（rejected）を分ける。"""
+    con.execute("INSERT INTO patents (seed_id, state, number) VALUES (3, 'expired', '特許第0000003号')")
+    con.execute("INSERT INTO patents (seed_id, state, number) VALUES (4, 'rejected', '特願2020-000004')")
+    con.execute("INSERT INTO patents (seed_id, state) VALUES (5, 'none')")
+
+    labels = [repo.patent_label(repo.get_patent(con, i)) for i in (3, 4, 5)]
+
+    assert labels == ["権利消滅", "登録されず", "未出願"]
+    assert [t["id"] for t in repo.list_techs(con, patent_state="expired")] == [3]
+
+
 def test_list_techsは全シーズ文書を返す(con):
     techs = repo.list_techs(con)
 
