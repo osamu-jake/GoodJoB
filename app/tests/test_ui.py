@@ -337,3 +337,29 @@ def test_detail_shows_patent_number_and_dates(app, seed_id, number_label, number
     assert f"{number_label}</span>　{number}" in facts
     if missing:
         assert f"{missing}</span>　—" in facts
+
+
+def test_detail_shows_tech_trace(app):
+    """S-08（F-08）：詳細に、採用した企画の商品・訴求・上市年月と、似た課題を解く技術の
+    実績・判断（採用／見送り／評価中／未評価）が並ぶ（ADR-0029・0039）。"""
+    at = app()
+    at.session_state["detail_id"] = 2
+    at.run()
+    assert not at.exception
+    markdowns = [m.value for m in at.markdown]
+    captions = [c.value for c in at.caption]
+    assert "**似た課題を解く技術と、その使われ方**" in markdowns
+    similar = [m for m in markdowns if ":gray-badge[関連度" in m]
+    assert similar  # 似た課題を解く技術が出る
+    # 似た技術ごとの判断（詳細本体の判断は markdown、似た技術の判断は caption で出している）
+    assert any(c.startswith(("✅", "⛔", "🔄", "❓")) for c in captions)
+    # 技術2の似た技術には技術1（採用・見送りの両方あり）が入り、その商品・訴求・上市年月まで出る
+    assert any("皮脂吸着性微粒子を含有する整髪料組成物" in m for m in similar)
+    assert any(c.startswith("✅ 採用") for c in captions) and any(c.startswith("⛔ 見送り") for c in captions)
+    assert any("「夕方まで前髪さらさら」" in c and "2025-03" in c for c in captions)
+
+    # 自分自身の使われ方：採用した企画の商品・訴求・上市年月
+    at.session_state["detail_id"] = 1
+    at.run()
+    captions = [c.value for c in at.caption]
+    assert any("サンプル・ハードワックス" in c and "2025-03" in c for c in captions)
