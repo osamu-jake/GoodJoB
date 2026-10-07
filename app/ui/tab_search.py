@@ -144,16 +144,22 @@ def _render_comparison(con, searched: dict) -> None:
     for col, (label, result) in zip(st.columns(3, border=True), results.items()):
         with col:
             st.markdown(f"**{label}**")
-            st.caption(f"{len(result.hits)}件")
             if not result.hits:
                 st.caption("0件（共通する単語がありません）")
                 continue
-            lines = []
+            st.caption(f"{len(result.hits)}件")
+            # 「1.」で始めると markdown の箇条書きとして読まれ字下げが崩れるので、行ごとに div で組む
+            rows = []
             for rank, h in enumerate(result.hits[:COMPARE_TOP], start=1):
                 score = scoring.score_hit(h)
                 pct = f"{score.percent}%" if score.percent is not None else score.label
-                lines.append(f"{rank}. {esc(titles.get(h.doc_id, '—'))}　<span style='color:gray'>{pct}</span>")
-            st.markdown("<br>".join(lines), unsafe_allow_html=True)
+                rows.append(
+                    f"<div style='display:flex; gap:6px; margin-bottom:4px;'>"
+                    f"<span style='color:gray; min-width:1.2em;'>{rank}</span>"
+                    f"<span style='flex:1;'>{esc(titles.get(h.doc_id, '—'))}</span>"
+                    f"<span style='color:gray; white-space:nowrap;'>{pct}</span></div>"
+                )
+            st.markdown("".join(rows), unsafe_allow_html=True)
 
 
 def _render_same_side(con, result) -> None:
