@@ -1,0 +1,44 @@
+# #91・#52・#53・#54 のテスト（ライト表示の固定・権利状況・技術トレース・3方式の比較）
+# 実行日: 2026-10-07 23:25
+# 実行環境: main（5daf490）＋ 本ブランチ
+# データ: tests/seeds/test_seeds.sql、埋め込みは疑似エンコーダ（conftest.py）
+
+$ .venv/bin/python -m pytest -v tests/test_ui.py
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0 -- /Users/kozue/projects/GoodJoB/app/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/kozue/projects/GoodJoB/app
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 25 items
+
+tests/test_ui.py::test_app_starts_without_error PASSED                   [  4%]
+tests/test_ui.py::test_search_shows_cards_and_logs_once PASSED           [  8%]
+tests/test_ui.py::test_keyword_only_zero_vs_hybrid PASSED                [ 12%]
+tests/test_ui.py::test_keyword_only_search_is_not_logged PASSED          [ 16%]
+tests/test_ui.py::test_detail_opens_from_search_card PASSED              [ 20%]
+tests/test_ui.py::test_detail_unevaluated_and_no_patent PASSED           [ 24%]
+tests/test_ui.py::test_detail_opens_from_techdb_list PASSED              [ 28%]
+tests/test_ui.py::test_close_button_closes_detail PASSED                 [ 32%]
+tests/test_ui.py::test_techdb_filters PASSED                             [ 36%]
+tests/test_ui.py::test_same_side_and_claims PASSED                       [ 40%]
+tests/test_ui.py::test_shows_guidance_when_no_data PASSED                [ 44%]
+tests/test_ui.py::test_dismissing_detail_clears_it PASSED                [ 48%]
+tests/test_ui.py::test_cards_show_match_reasons PASSED                   [ 52%]
+tests/test_ui.py::test_demo_buttons_fill_query PASSED                    [ 56%]
+tests/test_ui.py::test_no_hit_shows_fixed_message_and_records_gap PASSED [ 60%]
+tests/test_ui.py::test_hit_shows_cards_without_folding PASSED            [ 64%]
+tests/test_ui.py::test_match_phrases_are_escaped PASSED                  [ 68%]
+tests/test_ui.py::test_theme_is_fixed_to_light PASSED                    [ 72%]
+tests/test_ui.py::test_hit_count_does_not_fix_text_color PASSED          [ 76%]
+tests/test_ui.py::test_patent_states_are_distinguished PASSED            [ 80%]
+tests/test_ui.py::test_detail_shows_patent_number_and_dates[1-\u7279\u8a31\u756a\u53f7-\u7279\u8a31\u7b2c0000001\u53f7-None] PASSED [ 84%]
+tests/test_ui.py::test_detail_shows_patent_number_and_dates[2-\u51fa\u9858\u756a\u53f7-\u7279\u98582023-000002-\u767b\u9332\u65e5] PASSED [ 88%]
+tests/test_ui.py::test_detail_shows_tech_trace PASSED                    [ 92%]
+tests/test_ui.py::test_compare_three_modes_side_by_side PASSED           [ 96%]
+tests/test_ui.py::test_compare_is_off_by_default PASSED                  [100%]
+
+============================== 25 passed in 5.27s ==============================
+
+$ .venv/bin/python -m pytest -q   # 全体
+167 passed in 19.53s
