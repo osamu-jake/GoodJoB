@@ -92,10 +92,10 @@ def _render_result(con, searched: dict) -> None:
 def _render_cards(con, searched: dict, summary: str) -> None:
     """件数の行と、反対側の結果カード。"""
     result = searched["result"]
+    # 数字は文字色を指定せずテーマの色に従わせる（黒を直接指定するとダークモードで見えなくなる。#91）
     st.markdown(
-        f"<span style='font-size:0.9em; color:gray;'>"
-        f"<span style='font-size:1.5em; color:black;'>{len(result.hits)}</span> 件　（{esc(summary)}）"
-        f"</span>",
+        f"<span style='font-size:1.35em;'>{len(result.hits)}</span>"
+        f"<span style='font-size:0.9em; color:gray;'> 件　（{esc(summary)}）</span>",
         unsafe_allow_html=True,
     )
 

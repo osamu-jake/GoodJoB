@@ -293,3 +293,21 @@ def test_match_phrases_are_escaped():
     shown = at.markdown[0].value
     assert "&lt;b&gt;前髪&lt;/b&gt;" in shown and "<b>" not in shown
     assert "A&amp;B" in shown
+
+
+def test_theme_is_fixed_to_light():
+    """#91：見る人のPCがダークモードでもライトで表示する（色はライト表示を前提に決めている）。
+
+    設定は app.py と同じフォルダの .streamlit/config.toml（起動した場所に関係なく読まれる）。
+    """
+    import tomllib
+
+    config = tomllib.loads((APP.parent / ".streamlit" / "config.toml").read_text(encoding="utf-8"))
+    assert config["theme"]["base"] == "light"
+
+
+def test_hit_count_does_not_fix_text_color(app):
+    """#91：件数の数字に黒を直接指定しない（ダークモードで背景に溶けて見えなくなるため）。"""
+    at = _search(app())
+    count = next(m.value for m in at.markdown if " 件　（" in m.value)
+    assert "color:black" not in count.replace(" ", "")
