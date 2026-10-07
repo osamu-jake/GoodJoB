@@ -67,7 +67,7 @@ def render_score(score) -> None:
         )
         # メーター。st.progress はテーマの基本色（検索ボタンと同じ赤）になるので、HTMLで青に固定する（#91）
         st.markdown(
-            f"<div style='height:8px; background:rgba(49,51,63,0.1); border-radius:4px; margin-top:4px;'>"
+            f"<div style='height:8px; background:rgba(49,51,63,0.1); border-radius:4px; margin:4px 0 8px;'>"
             f"<div style='width:{score.percent}%; height:100%; background:{METER_COLOR}; border-radius:4px;'></div>"
             f"</div>",
             unsafe_allow_html=True,
