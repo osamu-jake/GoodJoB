@@ -363,3 +363,28 @@ def test_detail_shows_tech_trace(app):
     at.run()
     captions = [c.value for c in at.caption]
     assert any("サンプル・ハードワックス" in c and "2025-03" in c for c in captions)
+
+
+def test_compare_three_modes_side_by_side(app, con):
+    """S-09（F-10）：比較をオンにすると、同じ文の キーワードのみ／意味のみ／両方併用 の結果が並ぶ。
+    比較のための検索はログに残さない。"""
+    at = app()
+    at.sidebar.toggle(key="compare").set_value(True).run()
+    _search(at, query="夕方になるとベタついてしまう")  # キーワード検索では0件になる文
+    assert not at.exception
+    markdowns = [m.value for m in at.markdown]
+    assert any(m.startswith("**🔬 3方式の比較**") for m in markdowns)
+    for label in ("キーワードのみ", "意味のみ", "両方併用"):
+        assert f"**{label}**" in markdowns
+    compare = at.session_state["search"]["compare"]
+    assert len(compare["キーワードのみ"].hits) == 0          # 言葉の壁
+    assert len(compare["意味のみ"].hits) > 0
+    assert len(compare["両方併用"].hits) > 0
+    assert any("0件（共通する単語がありません）" == c.value for c in at.caption)
+    assert _log_count(con) == 1  # 通常の検索（両方併用）の1行だけ
+
+
+def test_compare_is_off_by_default(app):
+    """比較はデモ用なので、ふだんの画面には出さない。"""
+    at = _search(app())
+    assert not any(m.value.startswith("**🔬 3方式の比較**") for m in at.markdown)

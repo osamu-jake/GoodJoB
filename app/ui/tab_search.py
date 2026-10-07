@@ -14,8 +14,8 @@ from .components import esc, sample_badge
 LABEL = "企画案・生活者の声を、そのまま入力してください"
 
 
-def render(con, mode: str) -> None:
-    """`mode` はサイドバーの検索方式（cross_search.MODE_*）。"""
+def render(con, mode: str, compare: bool = False) -> None:
+    """`mode` はサイドバーの検索方式（cross_search.MODE_*）。`compare` は3方式の比較を出すか（F-10）。"""
     # text_area の height は「見出し＋入力欄」の合計なので、見出しを外に出して入力欄だけを80pxにする
     st.markdown(LABEL, help="検索語ではなく文章を入れてください。")
     col_text, col_btn = st.columns([5, 1], vertical_alignment="bottom")
@@ -39,6 +39,8 @@ def render(con, mode: str) -> None:
         st.info("検索方式を変えました。もう一度「検索」を押してください。")
         return
 
+    if compare:
+        _render_comparison(con, searched)
     _render_result(con, searched)
 
 
@@ -59,7 +61,8 @@ def _run_search(con, query: str, mode: str) -> None:
     # 画面が描き直されても計算し直さない。遅すぎる場合の撤退ラインは「上位3件に絞る」（同ADR）
     matches = {h.doc_id: highlight.highlight(con, query, h.doc_id) for h in result.hits}
     st.session_state.search = {
-        "mode": mode, "result": result, "no_hit": no_hit, "log_id": log_id, "matches": matches,
+        "query": query, "mode": mode, "result": result, "no_hit": no_hit, "log_id": log_id,
+        "matches": matches,
     }
 
 
@@ -111,6 +114,46 @@ def _render_cards(con, searched: dict, summary: str) -> None:
         if hit.doc_id in docs:
             render_card(con, hit, docs[hit.doc_id], on_detail=open_detail,
                         matches=searched["matches"].get(hit.doc_id))
+
+
+# 比較で並べる方式（表示名 → cross_search の mode）と件数
+COMPARE_MODES = {
+    "キーワードのみ": cross_search.MODE_BM25,
+    "意味のみ": cross_search.MODE_VECTOR,
+    "両方併用": cross_search.MODE_HYBRID,
+}
+COMPARE_TOP = 5
+
+
+def _render_comparison(con, searched: dict) -> None:
+    """F-10・S-09：同じ文で3方式の結果を横に並べる（デモ専用。ログには残さない）。
+
+    3方式の検索は一致理由を計算しないので速い。結果は検索ごとに1回だけ計算して覚えておく。
+    """
+    if "compare" not in searched:
+        searched["compare"] = {
+            label: cross_search.cross_search(con, searched["query"], query_side="need", mode=m)
+            for label, m in COMPARE_MODES.items()
+        }
+    results = searched["compare"]
+    ids = {h.doc_id for r in results.values() for h in r.hits[:COMPARE_TOP]}
+    titles = {i: d["title"] for i, d in repositories.get_documents(con, list(ids)).items()}
+
+    st.divider()
+    st.markdown("**🔬 3方式の比較**（同じ文で、それぞれの上位5件）")
+    for col, (label, result) in zip(st.columns(3, border=True), results.items()):
+        with col:
+            st.markdown(f"**{label}**")
+            st.caption(f"{len(result.hits)}件")
+            if not result.hits:
+                st.caption("0件（共通する単語がありません）")
+                continue
+            lines = []
+            for rank, h in enumerate(result.hits[:COMPARE_TOP], start=1):
+                score = scoring.score_hit(h)
+                pct = f"{score.percent}%" if score.percent is not None else score.label
+                lines.append(f"{rank}. {esc(titles.get(h.doc_id, '—'))}　<span style='color:gray'>{pct}</span>")
+            st.markdown("<br>".join(lines), unsafe_allow_html=True)
 
 
 def _render_same_side(con, result) -> None:
