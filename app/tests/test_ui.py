@@ -311,3 +311,29 @@ def test_hit_count_does_not_fix_text_color(app):
     at = _search(app())
     count = next(m.value for m in at.markdown if " 件　（" in m.value)
     assert "color:black" not in count.replace(" ", "")
+
+
+def test_patent_states_are_distinguished():
+    """S-15（一覧）：権利状況の5区分が、アイコンと表示名の両方で区別できる（ADR-0053）。"""
+    from db.repositories import PATENT_STATE_LABELS
+    from ui.components import STATE_ICON, patent_text
+
+    texts = {patent_text({"state": s, "state_label": label}) for s, label in PATENT_STATE_LABELS.items()}
+    assert len(texts) == 5
+    assert len({STATE_ICON[s] for s in PATENT_STATE_LABELS}) == 5  # 色だけでも見分けられる
+
+
+@pytest.mark.parametrize("seed_id, number_label, number, missing", [
+    (1, "特許番号", "特許第0000001号", None),     # 登録済：特許番号と3つの日付
+    (2, "出願番号", "特願2023-000002", "登録日"),  # 出願中：出願番号。登録日・満了日はまだ無い
+])
+def test_detail_shows_patent_number_and_dates(app, seed_id, number_label, number, missing):
+    """S-15（詳細）：番号（登録済は特許番号、出願中は出願番号）と各日付を見出し付きで出す（F-19）。"""
+    at = app()
+    at.session_state["detail_id"] = seed_id
+    at.run()
+    assert not at.exception
+    facts = next(t for t in _texts(at) if "出願日" in t and "存続期間満了日" in t)
+    assert f"{number_label}</span>　{number}" in facts
+    if missing:
+        assert f"{missing}</span>　—" in facts

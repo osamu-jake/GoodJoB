@@ -4,8 +4,9 @@ import html
 
 import streamlit as st
 
-# 権利状況のアイコン（patents.state の値 → 表示。ADR-0053）
-STATE_ICON = {"registered": "🟢", "pending": "🟡", "expired": "⚫", "rejected": "🔴", "none": "🔴"}
+# 権利状況のアイコン（patents.state の値 → 表示。ADR-0053）。5区分を色で見分けられるよう、
+# 同じアイコンは使わない（F-19・S-15）。権利が有効＝緑、審査中＝黄、権利なしは消滅＝黒・不成立＝赤・未出願＝白
+STATE_ICON = {"registered": "🟢", "pending": "🟡", "expired": "⚫", "rejected": "🔴", "none": "⚪️"}
 NO_PATENT_ICON = "⚪️"
 
 # どのフィールドで一致したか（cross_search の matched_field → 表示名）

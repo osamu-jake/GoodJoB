@@ -12,6 +12,7 @@ from search import cross_search, scoring
 
 from .components import (
     DECISION_ICON,
+    esc,
     patent_text,
     render_ai_note,
     render_plain_summary,
@@ -48,7 +49,8 @@ def show_detail(con, seed_id: int) -> None:
 
     render_section("この技術が解決しようとしている課題", doc["problem"])
     render_section("要約", doc["body"])
-    render_section("背景技術", doc["background"])
+    if doc["background"]:   # 背景技術は転記していない特許もある。空の枠は出さない
+        render_section("背景技術", doc["background"])
 
     st.space("small")
     col_pat, col_use, col_dec = st.columns(3, border=True)
@@ -74,11 +76,27 @@ def _render_patent(patent: dict | None) -> None:
     st.markdown(patent_text(patent))
     if patent is None:
         return
-    st.markdown(f"`{patent['number'] or '—'}`")
-    st.caption(f"出願 {patent['filed'] or '—'}　登録 {patent['registered'] or '—'}"
-               f"　満了 {patent['expires'] or '—'}")
+    if patent["state"] == "none":   # 未出願の技術には番号も日付も無い
+        return
+    # 番号は、登録された特許なら特許番号、登録前・不成立なら出願番号（要件F-19）
+    number_label = "特許番号" if patent["state"] in ("registered", "expired") else "出願番号"
+    _render_facts([
+        (number_label, patent["number"]),
+        ("出願日", patent["filed"]),
+        ("登録日", patent["registered"]),
+        ("存続期間満了日", patent["expires"]),
+    ])
     if patent["note"]:
         st.caption(patent["note"])
+
+
+def _render_facts(rows: list[tuple[str, str | None]]) -> None:
+    """見出し（灰色）と値を1行ずつ並べる。値が無ければ「—」。"""
+    st.markdown(
+        "<br>".join(f"<span style='color:gray; font-size:0.85em'>{esc(label)}</span>　{esc(value or '—')}"
+                    for label, value in rows),
+        unsafe_allow_html=True,
+    )
 
 
 def _render_claims(claims: list[dict]) -> None:
