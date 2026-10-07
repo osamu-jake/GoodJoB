@@ -14,8 +14,8 @@ from .components import esc, sample_badge
 LABEL = "企画案・生活者の声を、そのまま入力してください"
 
 
-def render(con, mode: str) -> None:
-    """`mode` はサイドバーの検索方式（cross_search.MODE_*）。"""
+def render(con, mode: str, compare: bool = False) -> None:
+    """`mode` はサイドバーの検索方式（cross_search.MODE_*）。`compare` は3方式の比較を出すか（F-10）。"""
     # text_area の height は「見出し＋入力欄」の合計なので、見出しを外に出して入力欄だけを80pxにする
     st.markdown(LABEL, help="検索語ではなく文章を入れてください。")
     col_text, col_btn = st.columns([5, 1], vertical_alignment="bottom")
@@ -39,6 +39,8 @@ def render(con, mode: str) -> None:
         st.info("検索方式を変えました。もう一度「検索」を押してください。")
         return
 
+    if compare:
+        _render_comparison(con, searched)
     _render_result(con, searched)
 
 
@@ -59,7 +61,8 @@ def _run_search(con, query: str, mode: str) -> None:
     # 画面が描き直されても計算し直さない。遅すぎる場合の撤退ラインは「上位3件に絞る」（同ADR）
     matches = {h.doc_id: highlight.highlight(con, query, h.doc_id) for h in result.hits}
     st.session_state.search = {
-        "mode": mode, "result": result, "no_hit": no_hit, "log_id": log_id, "matches": matches,
+        "query": query, "mode": mode, "result": result, "no_hit": no_hit, "log_id": log_id,
+        "matches": matches,
     }
 
 
@@ -92,10 +95,10 @@ def _render_result(con, searched: dict) -> None:
 def _render_cards(con, searched: dict, summary: str) -> None:
     """件数の行と、反対側の結果カード。"""
     result = searched["result"]
+    # 数字は文字色を指定せずテーマの色に従わせる（黒を直接指定するとダークモードで見えなくなる。#91）
     st.markdown(
-        f"<span style='font-size:0.9em; color:gray;'>"
-        f"<span style='font-size:1.5em; color:black;'>{len(result.hits)}</span> 件　（{esc(summary)}）"
-        f"</span>",
+        f"<span style='font-size:1.35em;'>{len(result.hits)}</span>"
+        f"<span style='font-size:0.9em; color:gray;'> 件　（{esc(summary)}）</span>",
         unsafe_allow_html=True,
     )
 
@@ -111,6 +114,52 @@ def _render_cards(con, searched: dict, summary: str) -> None:
         if hit.doc_id in docs:
             render_card(con, hit, docs[hit.doc_id], on_detail=open_detail,
                         matches=searched["matches"].get(hit.doc_id))
+
+
+# 比較で並べる方式（表示名 → cross_search の mode）と件数
+COMPARE_MODES = {
+    "キーワードのみ": cross_search.MODE_BM25,
+    "意味のみ": cross_search.MODE_VECTOR,
+    "両方併用": cross_search.MODE_HYBRID,
+}
+COMPARE_TOP = 5
+
+
+def _render_comparison(con, searched: dict) -> None:
+    """F-10・S-09：同じ文で3方式の結果を横に並べる（デモ専用。ログには残さない）。
+
+    3方式の検索は一致理由を計算しないので速い。結果は検索ごとに1回だけ計算して覚えておく。
+    """
+    if "compare" not in searched:
+        searched["compare"] = {
+            label: cross_search.cross_search(con, searched["query"], query_side="need", mode=m)
+            for label, m in COMPARE_MODES.items()
+        }
+    results = searched["compare"]
+    ids = {h.doc_id for r in results.values() for h in r.hits[:COMPARE_TOP]}
+    titles = {i: d["title"] for i, d in repositories.get_documents(con, list(ids)).items()}
+
+    st.divider()
+    st.markdown("**🔬 3方式の比較**（同じ文で、それぞれの上位5件）")
+    for col, (label, result) in zip(st.columns(3, border=True), results.items()):
+        with col:
+            st.markdown(f"**{label}**")
+            if not result.hits:
+                st.caption("0件（共通する単語がありません）")
+                continue
+            st.caption(f"{len(result.hits)}件")
+            # 「1.」で始めると markdown の箇条書きとして読まれ字下げが崩れるので、行ごとに div で組む
+            rows = []
+            for rank, h in enumerate(result.hits[:COMPARE_TOP], start=1):
+                score = scoring.score_hit(h)
+                pct = f"{score.percent}%" if score.percent is not None else score.label
+                rows.append(
+                    f"<div style='display:flex; gap:6px; margin-bottom:4px;'>"
+                    f"<span style='color:gray; min-width:1.2em;'>{rank}</span>"
+                    f"<span style='flex:1;'>{esc(titles.get(h.doc_id, '—'))}</span>"
+                    f"<span style='color:gray; white-space:nowrap;'>{pct}</span></div>"
+                )
+            st.markdown("".join(rows), unsafe_allow_html=True)
 
 
 def _render_same_side(con, result) -> None:

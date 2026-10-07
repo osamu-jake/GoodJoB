@@ -89,7 +89,7 @@ def main() -> None:
 
     with st.sidebar:
         st.subheader("デモ用")
-        st.caption("入力例（ADR-0026）。押すと検索窓に入ります。")
+        st.caption("押すと検索窓に入ります。")
         for label, text in DEMO_QUERIES.items():
             if st.button(label, width="stretch"):
                 st.session_state.query = text
@@ -100,6 +100,9 @@ def main() -> None:
         mode_label = st.radio("検索方式", list(MODES), index=2, label_visibility="collapsed")
         mode, note = MODES[mode_label]
         st.caption(note)
+        # F-10：同じ文で3方式の結果を横に並べる（デモで「両方併用」の効果を見せるため）
+        compare = st.toggle("3方式を並べて比較", key="compare",
+                            help="検索結果の上に、3方式それぞれの上位5件を並べます。")
 
     st.title("Idea Bridge")
     st.caption("マーケ／商品企画の担当者が、企画案の言葉のまま社内技術を探す")
@@ -107,7 +110,7 @@ def main() -> None:
     search_tab, techdb_tab = st.tabs([" 🔎 検索 ", " 📚 技術データベース "])
     with search_tab:
         st.container(height=30, border=False)
-        tab_search.render(con, mode)
+        tab_search.render(con, mode, compare)
     with techdb_tab:
         st.container(height=30, border=False)
         tab_techdb.render(con)

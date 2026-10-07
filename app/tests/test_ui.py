@@ -293,3 +293,98 @@ def test_match_phrases_are_escaped():
     shown = at.markdown[0].value
     assert "&lt;b&gt;前髪&lt;/b&gt;" in shown and "<b>" not in shown
     assert "A&amp;B" in shown
+
+
+def test_theme_is_fixed_to_light():
+    """#91：見る人のPCがダークモードでもライトで表示する（色はライト表示を前提に決めている）。
+
+    設定は app.py と同じフォルダの .streamlit/config.toml（起動した場所に関係なく読まれる）。
+    """
+    import tomllib
+
+    config = tomllib.loads((APP.parent / ".streamlit" / "config.toml").read_text(encoding="utf-8"))
+    assert config["theme"]["base"] == "light"
+
+
+def test_hit_count_does_not_fix_text_color(app):
+    """#91：件数の数字に黒を直接指定しない（ダークモードで背景に溶けて見えなくなるため）。"""
+    at = _search(app())
+    count = next(m.value for m in at.markdown if " 件　（" in m.value)
+    assert "color:black" not in count.replace(" ", "")
+
+
+def test_patent_states_are_distinguished():
+    """S-15（一覧）：権利状況の5区分が、アイコンと表示名の両方で区別できる（ADR-0053）。"""
+    from db.repositories import PATENT_STATE_LABELS
+    from ui.components import STATE_ICON, patent_text
+
+    texts = {patent_text({"state": s, "state_label": label}) for s, label in PATENT_STATE_LABELS.items()}
+    assert len(texts) == 5
+    assert len({STATE_ICON[s] for s in PATENT_STATE_LABELS}) == 5  # 色だけでも見分けられる
+
+
+@pytest.mark.parametrize("seed_id, number_label, number, missing", [
+    (1, "特許番号", "特許第0000001号", None),     # 登録済：特許番号と3つの日付
+    (2, "出願番号", "特願2023-000002", "登録日"),  # 出願中：出願番号。登録日・満了日はまだ無い
+])
+def test_detail_shows_patent_number_and_dates(app, seed_id, number_label, number, missing):
+    """S-15（詳細）：番号（登録済は特許番号、出願中は出願番号）と各日付を見出し付きで出す（F-19）。"""
+    at = app()
+    at.session_state["detail_id"] = seed_id
+    at.run()
+    assert not at.exception
+    facts = next(t for t in _texts(at) if "出願日" in t and "存続期間満了日" in t)
+    assert f"{number_label}</span>　{number}" in facts
+    if missing:
+        assert f"{missing}</span>　—" in facts
+
+
+def test_detail_shows_tech_trace(app):
+    """S-08（F-08）：詳細に、採用した企画の商品・訴求・上市年月と、似た課題を解く技術の
+    実績・判断（採用／見送り／評価中／未評価）が並ぶ（ADR-0029・0039）。"""
+    at = app()
+    at.session_state["detail_id"] = 2
+    at.run()
+    assert not at.exception
+    markdowns = [m.value for m in at.markdown]
+    captions = [c.value for c in at.caption]
+    assert "**似た課題を解く技術と、その使われ方**" in markdowns
+    similar = [m for m in markdowns if ":gray-badge[関連度" in m]
+    assert similar  # 似た課題を解く技術が出る
+    # 似た技術ごとの判断（詳細本体の判断は markdown、似た技術の判断は caption で出している）
+    assert any(c.startswith(("✅", "⛔", "🔄", "❓")) for c in captions)
+    # 技術2の似た技術には技術1（採用・見送りの両方あり）が入り、その商品・訴求・上市年月まで出る
+    assert any("皮脂吸着性微粒子を含有する整髪料組成物" in m for m in similar)
+    assert any(c.startswith("✅ 採用") for c in captions) and any(c.startswith("⛔ 見送り") for c in captions)
+    assert any("「夕方まで前髪さらさら」" in c and "2025-03" in c for c in captions)
+
+    # 自分自身の使われ方：採用した企画の商品・訴求・上市年月
+    at.session_state["detail_id"] = 1
+    at.run()
+    captions = [c.value for c in at.caption]
+    assert any("サンプル・ハードワックス" in c and "2025-03" in c for c in captions)
+
+
+def test_compare_three_modes_side_by_side(app, con):
+    """S-09（F-10）：比較をオンにすると、同じ文の キーワードのみ／意味のみ／両方併用 の結果が並ぶ。
+    比較のための検索はログに残さない。"""
+    at = app()
+    at.sidebar.toggle(key="compare").set_value(True).run()
+    _search(at, query="夕方になるとベタついてしまう")  # キーワード検索では0件になる文
+    assert not at.exception
+    markdowns = [m.value for m in at.markdown]
+    assert any(m.startswith("**🔬 3方式の比較**") for m in markdowns)
+    for label in ("キーワードのみ", "意味のみ", "両方併用"):
+        assert f"**{label}**" in markdowns
+    compare = at.session_state["search"]["compare"]
+    assert len(compare["キーワードのみ"].hits) == 0          # 言葉の壁
+    assert len(compare["意味のみ"].hits) > 0
+    assert len(compare["両方併用"].hits) > 0
+    assert any("0件（共通する単語がありません）" == c.value for c in at.caption)
+    assert _log_count(con) == 1  # 通常の検索（両方併用）の1行だけ
+
+
+def test_compare_is_off_by_default(app):
+    """比較はデモ用なので、ふだんの画面には出さない。"""
+    at = _search(app())
+    assert not any(m.value.startswith("**🔬 3方式の比較**") for m in at.markdown)

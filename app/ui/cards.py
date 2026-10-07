@@ -49,6 +49,9 @@ def render_card(con, hit, doc: dict, on_detail, matches=None) -> None:
             on_detail(doc["id"])
 
 
+METER_COLOR = "#1C83E1"   # 関連度のメーターの色（Streamlit の標準の青）
+
+
 def render_score(score) -> None:
     """関連度（コサイン類似度の百分率。ADR-0010・0035）。語一致だけのときは数値を出さない。"""
     with st.container(gap=None):   # 数値とメーターをくっつける
@@ -62,7 +65,13 @@ def render_score(score) -> None:
             f"<span style='font-size:1rem; font-weight:600; margin-left:2px'>%</span>",
             unsafe_allow_html=True,
         )
-        st.progress(score.percent / 100)
+        # メーター。st.progress はテーマの基本色（検索ボタンと同じ赤）になるので、HTMLで青に固定する（#91）
+        st.markdown(
+            f"<div style='height:8px; background:rgba(49,51,63,0.1); border-radius:4px; margin:4px 0 8px;'>"
+            f"<div style='width:{score.percent}%; height:100%; background:{METER_COLOR}; border-radius:4px;'></div>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
     st.caption(score.label)
 
 
