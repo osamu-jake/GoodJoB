@@ -89,7 +89,7 @@ def main() -> None:
 
     with st.sidebar:
         st.subheader("デモ用")
-        st.caption("入力例（ADR-0026）。押すと検索窓に入ります。")
+        st.caption("押すと検索窓に入ります。")
         for label, text in DEMO_QUERIES.items():
             if st.button(label, width="stretch"):
                 st.session_state.query = text
