@@ -6,14 +6,14 @@ from search import cross_search, hit_judge
 
 
 def test_u08_BM25が0件で類似度0_70なら_ヒットなし():
-    """U-08: BM25=0件、類似度0.70（閾値0.80） → 「ヒットなし」と判定される。"""
+    """U-08: BM25=0件、類似度0.70（閾値0.82） → 「ヒットなし」と判定される。"""
     assert hit_judge.is_no_hit(bm25_count=0, top_similarity=0.70) is True
 
 
-@pytest.mark.parametrize("similarity, expected", [(0.79, True), (0.80, False)])
-def test_u09_閾値の境界は_0_79がヒットなし_0_80がヒットあり(similarity, expected):
-    """U-09（境界値）: 類似度がちょうど0.80／0.79 → 0.80は「ヒットあり」（基準値未満のみヒットなし）、0.79は「ヒットなし」。"""
-    assert hit_judge.THRESHOLD == 0.80
+@pytest.mark.parametrize("similarity, expected", [(0.81, True), (0.82, False)])
+def test_u09_閾値の境界は_0_81がヒットなし_0_82がヒットあり(similarity, expected):
+    """U-09（境界値）: 類似度がちょうど0.82／0.81 → 0.82は「ヒットあり」（基準値未満のみヒットなし）、0.81は「ヒットなし」（ADR-0054）。"""
+    assert hit_judge.THRESHOLD == 0.82
     assert hit_judge.is_no_hit(bm25_count=0, top_similarity=similarity) is expected
 
 

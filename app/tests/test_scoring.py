@@ -2,7 +2,7 @@
 
 import pytest
 
-from search import cross_search, scoring
+from search import cross_search, hit_judge, scoring
 
 
 def hit(similarity, via=cross_search.VIA_BOTH):
@@ -49,11 +49,18 @@ def test_意味検索でもヒットした文書は数値が出る():
 
 
 @pytest.mark.parametrize(
-    "similarity, label", [(0.90, "近い"), (0.85, "近い"), (0.84, "やや近い"), (0.80, "やや近い"), (0.79, "応用候補")]
+    "similarity, label",
+    [(0.90, "近い"), (0.85, "近い"), (0.84, "やや近い"), (0.82, "やや近い"), (0.815, "応用候補"), (0.80, "応用候補")],
 )
 def test_数値に添える言葉(similarity, label):
     assert scoring.proximity_label(similarity) == label
     assert scoring.score_hit(hit(similarity)).label == label
+
+
+def test_やや近いの下限はヒットなしの基準値とそろえる():
+    """ヒットなしで折りたたんだ候補に「やや近い」が付かないようにする（ADR-0054）。"""
+    assert scoring.SOMEWHAT_CLOSE_FROM == hit_judge.THRESHOLD
+    assert scoring.proximity_label(hit_judge.THRESHOLD - 0.001) == "応用候補"
 
 
 @pytest.mark.parametrize("similarity, percent", [(0.845, 85), (0.0, 0), (1.0, 100), (-0.05, 0), (1.02, 100)])

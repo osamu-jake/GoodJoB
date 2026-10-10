@@ -11,14 +11,16 @@
 import math
 from dataclasses import dataclass
 
-from . import cross_search
+from . import cross_search, hit_judge
 
 KEYWORD_ONLY_LABEL = "語一致"
 
 # 数値だけに頼らせないための言葉（ADR-0035：言葉の併記は続ける）。
 # 境目は暫定。e5の類似度は0.7〜0.9に固まりやすいので、実データを入れたあとに決め直す（ADR-0010の未決）
 CLOSE_FROM = 0.85  # これ以上は「近い」
-SOMEWHAT_CLOSE_FROM = 0.80  # これ以上は「やや近い」。未満は「応用候補」
+# 「やや近い」の下限は「ヒットなし」の基準値にそろえる。そろえないと、ヒットなしで折りたたんだ候補に
+# 「やや近い」が付いてしまう（ADR-0054）
+SOMEWHAT_CLOSE_FROM = hit_judge.THRESHOLD  # これ以上は「やや近い」。未満は「応用候補」
 
 
 @dataclass
