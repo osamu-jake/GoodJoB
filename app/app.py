@@ -114,7 +114,7 @@ def main() -> None:
     # 表示幅ちょうどのピクセル数に縮めてしまい、Retina 画面で粗く見える。大きめの画像を
     # HTML で埋め込み、ブラウザに縮めさせる
     logo = base64.b64encode(LOGO.read_bytes()).decode()
-    st.markdown(f"<img src='data:image/png;base64,{logo}' alt='Idea Bridge' style='width:240px'>",
+    st.markdown(f"<img src='data:image/png;base64,{logo}' alt='Idea Bridge' style='width:220px; display:block; margin-bottom:1rem'>",
                 unsafe_allow_html=True)
     st.caption("探し出せ！企画にマッチする自社技術を！作り出せ！市場価値を！")
 
