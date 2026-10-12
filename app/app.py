@@ -6,12 +6,17 @@
 起動（リポジトリ直下から）: app/.venv/bin/streamlit run app/app.py
 """
 
+from pathlib import Path
+
 import streamlit as st
 
 from db import build_db, connection
 from search import cross_search, vector
 from ui import tab_search, tab_techdb
 from ui.detail import show_detail
+
+# ロゴ画像。app.py からの相対位置で読むので、起動した場所（リポジトリ直下／app/）に関係なく表示される
+LOGO = Path(__file__).resolve().parent / "assets" / "logo.png"
 
 st.set_page_config(page_title="Idea Bridge", page_icon="🔎", layout="wide")
 
@@ -104,7 +109,7 @@ def main() -> None:
         compare = st.toggle("3方式を並べて比較", key="compare",
                             help="検索結果の上に、3方式それぞれの上位5件を並べます。")
 
-    st.title("Idea Bridge")
+    st.image(str(LOGO), width=240)   # 見出し「Idea Bridge」の代わりにロゴを出す
     st.caption("探し出せ！企画にマッチする自社技術を！作り出せ！市場価値を！")
 
     search_tab, techdb_tab = st.tabs([" 🔎 検索 ", " 📚 技術データベース "])

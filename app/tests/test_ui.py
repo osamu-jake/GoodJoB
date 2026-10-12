@@ -52,7 +52,8 @@ def _log_count(con):
 def test_app_starts_without_error(app):
     at = app()
     assert not at.exception
-    assert at.title[0].value == "Idea Bridge"
+    assert not at.title  # 見出しの文字の代わりにロゴ画像を出す
+    assert (APP.parent / "assets" / "logo.png").is_file()
 
 
 def test_search_shows_cards_and_logs_once(app, con):
