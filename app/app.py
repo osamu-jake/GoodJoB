@@ -38,7 +38,7 @@ st.html("""
 # 文面は 2-13 の本番データでの実測で確定したもの（ADR-0050。evidence/2-13_check_gap.txt）。
 # ①は実在FAQ（id=78）、②の正解は特開2020-152643（洗い流しやすい整髪剤）
 DEMO_QUERIES = {
-    "①生活者の声（短文）": "シャンプーしてもヘアワックスが落ちない。",
+    "①お客様の悩み（短文）": "シャンプーしてもヘアワックスが落ちない。",
     "②企画案（長文）": ("セット力はそのままに、お風呂で簡単に洗い流せる整髪料を企画したい。"
                         "毎日使うものなので、髪や頭皮への負担が少ない処方を探している。"),
 }
@@ -83,7 +83,7 @@ def main() -> None:
     con = get_connection()
     warm_up_model()
 
-    st.session_state.setdefault("query", DEMO_QUERIES["①生活者の声（短文）"])
+    st.session_state.setdefault("query", DEMO_QUERIES["①お客様の悩み（短文）"])
     st.session_state.setdefault("search", None)      # 直近の検索結果（方式・結果・ログID）
     st.session_state.setdefault("detail_id", None)   # 詳細を開いている技術の id
 
@@ -105,7 +105,7 @@ def main() -> None:
                             help="検索結果の上に、3方式それぞれの上位5件を並べます。")
 
     st.title("Idea Bridge")
-    st.caption("マーケ／商品企画の担当者が、企画案の言葉のまま社内技術を探す")
+    st.caption("探し出せ！企画にマッチする自社技術を！作り出せ！市場価値を！")
 
     search_tab, techdb_tab = st.tabs([" 🔎 検索 ", " 📚 技術データベース "])
     with search_tab:
@@ -120,8 +120,8 @@ def main() -> None:
         show_detail(con, st.session_state.detail_id)
 
     st.divider()
-    st.caption("PoC版。企画・採用実績・判断の記録は「サンプルデータ」と表示したものが架空データです。"
-               "このアプリは実現可否を判定しません。判断材料を提示するところまでを担います。")
+    st.caption("※試作版（PoC）です。「サンプルデータ」と表示された企画・採用実績・判断は架空のものです。"
+               "技術の採否は判定せず、検討に必要な情報を提示します。")
 
 
 main()
