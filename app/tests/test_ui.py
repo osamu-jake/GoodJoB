@@ -53,7 +53,7 @@ def test_app_starts_without_error(app):
     at = app()
     assert not at.exception
     assert not at.title  # 見出しの文字の代わりにロゴ画像を出す
-    assert (APP.parent / "assets" / "logo.png").is_file()
+    assert any("alt='Idea Bridge'" in m.value for m in at.markdown)
 
 
 def test_search_shows_cards_and_logs_once(app, con):

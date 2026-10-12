@@ -6,6 +6,7 @@
 起動（リポジトリ直下から）: app/.venv/bin/streamlit run app/app.py
 """
 
+import base64
 from pathlib import Path
 
 import streamlit as st
@@ -109,7 +110,12 @@ def main() -> None:
         compare = st.toggle("3方式を並べて比較", key="compare",
                             help="検索結果の上に、3方式それぞれの上位5件を並べます。")
 
-    st.image(str(LOGO), width=240)   # 見出し「Idea Bridge」の代わりにロゴを出す
+    # 見出し「Idea Bridge」の代わりにロゴを出す。st.image に幅を渡すと、サーバー側で画像を
+    # 表示幅ちょうどのピクセル数に縮めてしまい、Retina 画面で粗く見える。大きめの画像を
+    # HTML で埋め込み、ブラウザに縮めさせる
+    logo = base64.b64encode(LOGO.read_bytes()).decode()
+    st.markdown(f"<img src='data:image/png;base64,{logo}' alt='Idea Bridge' style='width:240px'>",
+                unsafe_allow_html=True)
     st.caption("探し出せ！企画にマッチする自社技術を！作り出せ！市場価値を！")
 
     search_tab, techdb_tab = st.tabs([" 🔎 検索 ", " 📚 技術データベース "])
