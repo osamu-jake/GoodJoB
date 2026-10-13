@@ -11,7 +11,7 @@ from search import cross_search, highlight, hit_judge, scoring
 from .cards import render_card
 from .components import esc, sample_badge
 
-LABEL = "企画案・生活者の声を、そのまま入力してください"
+LABEL = "企画案やお客様の悩みを、文章で入力してください"
 
 
 def render(con, mode: str, compare: bool = False) -> None:
@@ -73,7 +73,7 @@ def _render_result(con, searched: dict) -> None:
     summary = f"キーワード検索 {result.bm25_count}件／意味検索 {vector_count}件"
 
     if mode == cross_search.MODE_BM25 and not result.hits:
-        st.warning("キーワード検索では0件でした。生活者の言葉と技術文書の言葉が"
+        st.warning("キーワード検索では0件でした。お客様の言葉と技術文書の言葉が"
                    "一致しないためです。検索方式を「両方併用」に切り替えてください。")
         st.caption(summary)
         return
@@ -166,8 +166,7 @@ def _render_same_side(con, result) -> None:
     """①似た悩み＋②既存の訴求（ADR-0024・0031・0039）。反対側の結果とは別枠で出す。"""
     st.divider()
     with st.expander("似た悩み・既存の訴求"):
-        st.caption("同じ悩みが社内にすでに集まっているか、そしてその悩みに対して"
-                   "自社がもう何と言って答えているかです。")
+        st.caption("社内に寄せられている似た企画と、過去の自社の訴求内容を確認できます。")
 
         same = result.same_side_hits
         st.markdown(f"**① 似た悩み（{len(same)}件）**")

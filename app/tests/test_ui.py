@@ -52,7 +52,8 @@ def _log_count(con):
 def test_app_starts_without_error(app):
     at = app()
     assert not at.exception
-    assert at.title[0].value == "Idea Bridge"
+    assert not at.title  # 見出しの文字の代わりにロゴ画像を出す
+    assert any("alt='Idea Bridge'" in m.value for m in at.markdown)
 
 
 def test_search_shows_cards_and_logs_once(app, con):
@@ -234,7 +235,7 @@ def test_demo_buttons_fill_query(app):
     I-09 そのものは test_keyword_only_zero_vs_hybrid で確かめる。
     """
     demo = {  # ADR-0050 で確定した文
-        "①生活者の声（短文）": "シャンプーしてもヘアワックスが落ちない。",
+        "①お客様の悩み（短文）": "シャンプーしてもヘアワックスが落ちない。",
         "②企画案（長文）": "セット力はそのままに、お風呂で簡単に洗い流せる整髪料を企画したい。"
                            "毎日使うものなので、髪や頭皮への負担が少ない処方を探している。",
     }

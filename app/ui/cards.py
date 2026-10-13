@@ -19,7 +19,7 @@ def render_card(con, hit, doc: dict, on_detail, matches=None) -> None:
         head, right = st.columns([5, 1])
         with head:
             st.markdown(f"##### {doc['title']}", anchors=False)
-            st.badge("シーズ（技術）" if doc["doc_type"] == "seed" else "ニーズ（生活者の声）")
+            st.badge("シーズ（技術）" if doc["doc_type"] == "seed" else "ニーズ（お客様の悩み）")
         with right:
             render_score(score)
 
